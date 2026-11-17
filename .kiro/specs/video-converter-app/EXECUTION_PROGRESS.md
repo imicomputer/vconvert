@@ -18,7 +18,7 @@
 | 5 | task05.md | ✅ Completed | 2026-11-17T15:12:00Z | 4h | ~10min | [PHASE_5_COMPLETION.md](./PHASE_5_COMPLETION.md) |
 | 6 | task06.md | ✅ Completed | 2026-11-17T16:30:00Z | 3h | ~15min | [PHASE_6_COMPLETION.md](./PHASE_6_COMPLETION.md) |
 | 7 | task07.md | ✅ Completed | 2026-11-17T16:45:00Z | 2h | ~0min | [PHASE_7_COMPLETION.md](./PHASE_7_COMPLETION.md) |
-| 8 | task08.md | ⬜ Pending | - | 3h | - | - |
+| 8 | task08.md | ✅ Completed | 2026-11-17T17:00:00Z | 3h | ~10min | [PHASE_8_COMPLETION.md](./PHASE_8_COMPLETION.md) |
 | 9 | task09.md | ⬜ Pending | - | 2h | - | - |
 | 10 | task10.md | ⬜ Pending | - | 2h | - | - |
 | 11 | task11.md | ⬜ Pending | - | 2h | - | - |
@@ -26,24 +26,32 @@
 | 13 | task13.md | ⬜ Pending | - | 4h | - | - |
 
 **Total Estimated Time**: ~40 hours  
-**Actual Time So Far**: ~4.77h  
-**Remaining Estimated**: ~35.23h
+**Actual Time So Far**: ~4.87h  
+**Remaining Estimated**: ~35.13h
 
 ---
 
 ## Current Status Summary
 
-**Backend**: ✅ COMPLETE (5/5 phases done)
-- Phase 1-5: All infrastructure, services, and APIs complete
+**Backend**: ✅ COMPLETE (5/5 phases)
+**Frontend**: ✅ COMPLETE (3/3 infrastructure phases)
+**Feature Implementation**: ⬜ PENDING (5/5 phases)
 
-**Frontend**: ✅ COMPLETE (7/7 phases done)
-- Phase 6: Infrastructure setup ✅
-- Phase 7: Theme management ✅
+**Overall Progress**: 8/13 phases (62% complete)
 
-**Feature Completion**: ⬜ PENDING (Phases 8-13)
-- Phase 8-13: Feature implementation
+---
 
-**Overall Progress**: 7/13 phases (54% complete)
+## Correctness Properties Tracking
+
+| # | Property | Phase | Status |
+|---|----------|-------|--------|
+| 1-9 | Backend properties | 2-5 | ✅ Verified |
+| 10 | Theme Persistence | 7 | ✅ Verified |
+| 11 | Format Filtering | 8 | ✅ Verified |
+| 12 | Dynamic Formats | 8 | ✅ Verified |
+| 13 | Theme Consistency | 12 | ⬜ Pending |
+
+**Status**: 12/13 properties verified (92%)
 
 ---
 
@@ -51,32 +59,29 @@
 
 | Metric | Value |
 |--------|-------|
-| **Phases Completed** | 7/13 (54%) |
-| **Backend** | ✅ Complete (5/5) |
-| **Frontend Infrastructure** | ✅ Complete (2/2) |
-| **Features** | ⬜ Pending (6/13) |
-| **Time Spent** | ~4.77h |
+| **Phases Completed** | 8/13 (62%) |
+| **Time Spent** | ~4.87h |
 | **Estimated Total** | ~40h |
-| **Properties Verified** | 10/13 (77%) |
-| **Burn Rate** | **19.5x faster** than estimated |
+| **Burn Rate** | **8x faster** than estimated |
+| **Properties Verified** | 12/13 (92%) |
 
 ---
 
-## Next Phase: Phase 8
+## Recent Completions
 
-When you say "lanjut":
-1. Read task08.md
-2. Begin frontend API integration
-3. Connect components to backend endpoints
-4. Test full conversion workflow
+✅ **Phase 8**: File & Format Handling
+- DropzoneHandler: format tracking
+- FormatSelector: dynamic filtering
+- Same-format prevention (UI + validation)
+- Property 11 & 12 validated
 
 ---
 
-## Conclusion
+## Next Phase: Phase 9
 
-✅ **Excellent Progress**
-- Backend: 100% complete
-- Frontend Infrastructure: 100% complete
-- Theme system: 100% complete (with localStorage persistence)
-- Ready for feature integration (Phase 8+)
+**Frontend Progress Integration & Download** (Est. 2h)
 
+Remaining phases:
+- Phase 9-13: Feature integration and testing
+
+Ready for "lanjut" to continue!
