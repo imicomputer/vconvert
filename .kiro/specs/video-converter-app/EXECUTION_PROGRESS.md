@@ -31,6 +31,198 @@
 
 ---
 
+## Agent Handoff Info
+
+**Current Agent**: Kiro v4.5 (Claude Haiku 4.5)
+
+**Last Updated By**: Kiro v4.5
+
+**Last Update**: 2026-11-17T07:25:20Z
+
+**Compatible Agents**: 
+- ✅ LocalAI (with proper context files)
+- ✅ OpenCode (with proper context files)
+- ✅ VSCode Agent (with proper context files)
+- ✅ Manual execution (with documentation)
+
+**Required Files for Continuation**:
+```
+Project Root:
+  ├─ package.json (dependencies)
+  ├─ tsconfig.json (TypeScript config)
+  ├─ .env & .env.example (configuration)
+  ├─ dist/ (compiled JavaScript)
+  └─ src/ (all source files)
+
+Specifications:
+  ├─ .kiro/specs/video-converter-app/
+  │  ├─ EXECUTION_PROGRESS.md (this file)
+  │  ├─ requirements.md
+  │  ├─ design.md
+  │  ├─ task04.md (current task - if in progress)
+  │  ├─ task05.md through task13.md (upcoming)
+  │  ├─ PHASE_2_COMPLETION.md (context)
+  │  ├─ PHASE_3_COMPLETION.md (context)
+  │  ├─ COMPLETION_SUMMARY_TEMPLATE.md (template for new summaries)
+  │  └─ README_TRACKING.md (tracking system guide)
+```
+
+**Current Phase Status**: 
+- 🟨 Phase 4: In-progress (Backend Video Converter Service)
+- Task 017-020 pending execution
+- Next: task04.md
+
+**What to Do First**:
+```bash
+# 1. Read this file completely
+cat EXECUTION_PROGRESS.md
+
+# 2. Understand tracking system
+cat README_TRACKING.md
+
+# 3. Read previous phase context
+cat PHASE_3_COMPLETION.md
+
+# 4. Load current task
+cat task04.md
+
+# 5. Verify system state
+npm run build          # Should succeed
+timeout 8s npm start   # Should start on port 3000
+
+# 6. Begin implementation (follow task04.md)
+```
+
+---
+
+## Recommended Triggers for Adding Agent Handoff Prompts
+
+When using this project with other agents or in a handoff scenario, include these triggers in your prompt:
+
+### 🔴 **CRITICAL Triggers** (Always include):
+```markdown
+1. **Status Context**: 
+   "The project is at Phase N/13. Read EXECUTION_PROGRESS.md first.
+    Current phase is [PHASE_STATUS]. Required files are [FILE_LIST]."
+
+2. **Task Context**: 
+   "You're continuing task0X.md. The last agent completed [WHAT_WAS_DONE].
+    Next steps are in task0X.md. Follow COMPLETION_SUMMARY_TEMPLATE.md 
+    when done."
+
+3. **Correctness Properties**: 
+   "This phase must validate these properties: [PROPERTY_LIST].
+    See design.md for property definitions."
+
+4. **Build Verification**: 
+   "Before considering phase complete, verify:
+    - npm run build (should succeed with 0 errors)
+    - node dist/index.js (should start without errors)
+    - All acceptance criteria from task0X.md met"
+```
+
+### 🟡 **HIGH Priority Triggers** (Highly recommended):
+```markdown
+5. **Timing Tracking**: 
+   "Record actual time spent. Estimated is Xh. Previous phases ran 10-90% faster.
+    Create PHASE_N_COMPLETION.md when done with actual time."
+
+6. **Property Validation**: 
+   "Before sign-off, validate these correctness properties: [LIST].
+    Include validation proof in PHASE_N_COMPLETION.md."
+
+7. **Git Integration**: 
+   "After phase completion:
+    - Commit with message: 'Phase N complete: [summary]'
+    - Push to main branch
+    - Keep EXECUTION_PROGRESS.md updated"
+
+8. **Next Phase Prep**: 
+   "When done, mark phase as ✅ in EXECUTION_PROGRESS.md table.
+    Update 'Completed At' timestamp and 'Actual' duration.
+    Link to PHASE_N_COMPLETION.md you created."
+```
+
+### 🟢 **MEDIUM Priority Triggers** (Recommended):
+```markdown
+9. **Error Recovery**: 
+   "If errors occur:
+    - Don't skip to next phase
+    - Document error in PHASE_N_COMPLETION.md
+    - Fix and verify with build & runtime test
+    - Update properties validation status"
+
+10. **File Organization**: 
+    "All code follows this structure:
+     src/services/ (business logic)
+     src/strategies/ (Strategy pattern implementations)
+     src/controllers/ (API endpoints)
+     src/utils/ (helpers, logging, DI)
+     src/middleware/ (Express middleware)
+     src/models/ (TypeScript interfaces)"
+
+11. **Documentation Continuity**: 
+    "Maintain consistency:
+     - Use PHASE_N_COMPLETION.md format from TEMPLATE
+     - Link from EXECUTION_PROGRESS.md
+     - Include all sections: Overview, Tasks, Criteria, Properties, Metrics
+     - Add Sign-off checklist before completion"
+
+12. **Code Quality Standards**: 
+    "Follow project standards:
+     - SOLID principles (especially Dependency Injection)
+     - Strategy Pattern where applicable
+     - Error handling with AppError class
+     - Logging with Logger service
+     - Type-safe TypeScript (strict: true)
+     - No console.log (use logger instead)"
+```
+
+### 🔵 **LOW Priority Triggers** (Optional):
+```markdown
+13. **Performance Context**: 
+    "Note: Recent phases completed 10x faster than estimated!
+     Don't be surprised by quick completion times. Quality still verified."
+
+14. **Architecture Continuity**: 
+    "Understand the system architecture (see design.md):
+     - Hardware Detector (GPU acceleration)
+     - Media Probe Service (metadata extraction)
+     - Strategy Registry (8 video format encoders)
+     - DI Container (service injection)
+     - Future: VideoConverterService, API Controllers, Frontend"
+
+15. **Testing & Validation**: 
+    "When available, run full test suite:
+     npm test (or relevant test command)
+     Aim for 100% test pass rate before sign-off"
+
+16. **Recovery Commands**: 
+    "If interrupted, recover with:
+     grep '🟨 In-progress' EXECUTION_PROGRESS.md  # Find current phase
+     grep '⬜ Pending' EXECUTION_PROGRESS.md | head -1  # Find next phase
+     Then continue from that phase's task file"
+```
+
+---
+
+## Handoff Checklist for Agent
+
+When handing off to another agent, verify:
+
+- [ ] EXECUTION_PROGRESS.md status is current (latest phase marked 🟨 or ✅)
+- [ ] PHASE_N_COMPLETION.md exists for all completed phases
+- [ ] All files listed in "Required Files" section are present
+- [ ] npm run build completes successfully
+- [ ] Server starts without errors (timeout 8s node dist/index.js)
+- [ ] README_TRACKING.md is readable and clear
+- [ ] COMPLETION_SUMMARY_TEMPLATE.md provides clear examples
+- [ ] Git is up-to-date with all changes committed
+- [ ] Current phase (task0X.md) is clearly identified
+- [ ] Next agent has clear instructions on what to do first
+
+---
+
 ## Execution Rules
 
 ### Sequential Execution
