@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Converter - GPU Accelerated</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwindConfig = {
+            darkMode: 'selector',
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            bg: 'var(--color-bg)',
+                            surface: 'var(--color-surface)',
+                            border: 'var(--color-border)',
+                            text: 'var(--color-text)',
+                            'text-secondary': 'var(--color-text-secondary)',
+                            accent: 'var(--color-accent)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Theme CSS Variables -->
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="bg-theme-bg text-theme-text transition-colors duration-300">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-theme-surface border-b border-theme-border sticky top-0 z-10">
+            <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl font-bold">🎬 Video Converter</h1>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Hardware Badge -->
+                    <div id="hardware-badge" class="px-3 py-2 rounded-lg bg-theme-surface border border-theme-border text-sm font-medium">
+                        <span class="inline-block w-2 h-2 rounded-full mr-2 bg-gray-500"></span>
+                        <span id="hardware-text">Detecting...</span>
+                    </div>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-theme-border transition-colors" aria-label="Toggle theme">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path class="sun" fill-rule="evenodd" d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l-2.12-2.12a4 4 0 015.656-5.656l2.12 2.12a6 6 0 11-8.485 8.485l2.12-2.12a4 4 0 005.656-5.656z" clip-rule="evenodd" />
+                            <path class="moon" d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-8">
+            <!-- Step Indicators -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center flex-1">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold step-indicator active" data-step="1">1</div>
+                        <span class="text-sm text-theme-text-secondary mt-2">Upload</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-theme-border mx-4 step-line"></div>
+                    
+                    <!-- Step 2 -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full bg-theme-border text-theme-text flex items-center justify-center font-bold step-indicator" data-step="2">2</div>
+                        <span class="text-sm text-theme-text-secondary mt-2">Format</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-theme-border mx-4 step-line"></div>
+                    
+                    <!-- Step 3 -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full bg-theme-border text-theme-text flex items-center justify-center font-bold step-indicator" data-step="3">3</div>
+                        <span class="text-sm text-theme-text-secondary mt-2">Convert</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: Upload Zone -->
+            <section id="step1-upload" class="step-section active mb-8">
+                <div id="dropzone" class="border-2 border-dashed border-theme-border rounded-lg p-12 text-center transition-colors hover:border-theme-accent cursor-pointer bg-theme-surface hover:bg-opacity-75">
+                    <svg class="w-16 h-16 mx-auto text-theme-accent mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <h2 class="text-xl font-semibold mb-2">Drop your video here</h2>
+                    <p class="text-theme-text-secondary mb-4">or</p>
+                    <label class="inline-block">
+                        <input type="file" id="file-input" accept="video/*" class="hidden" />
+                        <span class="px-6 py-3 bg-theme-accent text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer inline-block">
+                            Browse Files
+                        </span>
+                    </label>
+                    <p class="text-sm text-theme-text-secondary mt-4">Supported: MP4, MKV, WebM, AVI, MOV, FLV, WMV, 3GP</p>
+                    <p class="text-sm text-theme-text-secondary">Max size: 2GB</p>
+                </div>
+                
+                <!-- File Info Display -->
+                <div id="file-info" class="hidden mt-6 p-4 bg-theme-surface border border-theme-border rounded-lg">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="font-semibold" id="file-name"></p>
+                            <p class="text-sm text-theme-text-secondary mt-1">
+                                <span id="file-size"></span> • <span id="file-ext"></span>
+                            </p>
+                        </div>
+                        <button id="change-file" class="text-sm text-theme-accent hover:underline">Change</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Format Selector -->
+            <section id="step2-format" class="step-section hidden mb-8">
+                <div class="bg-theme-surface border border-theme-border rounded-lg p-8">
+                    <h2 class="text-lg font-semibold mb-6">Choose output format</h2>
+                    
+                    <div class="space-y-4">
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="mp4" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">MP4 (H.264)</p>
+                                <p class="text-sm text-theme-text-secondary">Best compatibility, GPU accelerated</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="mkv" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">MKV (H.264)</p>
+                                <p class="text-sm text-theme-text-secondary">High quality, GPU accelerated</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="webm" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">WebM (VP9)</p>
+                                <p class="text-sm text-theme-text-secondary">Web optimized, modern format</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="avi" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">AVI (MPEG4)</p>
+                                <p class="text-sm text-theme-text-secondary">Legacy format, widely compatible</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="mov" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">MOV (H.264)</p>
+                                <p class="text-sm text-theme-text-secondary">Apple format, GPU accelerated</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="flv" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">FLV (MPEG2)</p>
+                                <p class="text-sm text-theme-text-secondary">Flash format, legacy support</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="wmv" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">WMV (WMV2)</p>
+                                <p class="text-sm text-theme-text-secondary">Windows Media, legacy support</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border border-theme-border rounded-lg cursor-pointer hover:bg-theme-bg transition-colors">
+                            <input type="radio" name="format" value="3gp" class="mr-3 w-4 h-4">
+                            <div>
+                                <p class="font-medium">3GP (H.263)</p>
+                                <p class="text-sm text-theme-text-secondary">Mobile format, QCIF 352x288</p>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-8">
+                        <button id="format-back" class="flex-1 px-4 py-3 border border-theme-border rounded-lg hover:bg-theme-bg transition-colors">
+                            Back
+                        </button>
+                        <button id="format-next" class="flex-1 px-4 py-3 bg-theme-accent text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3: Progress & Download -->
+            <section id="step3-progress" class="step-section hidden mb-8">
+                <div class="bg-theme-surface border border-theme-border rounded-lg p-8">
+                    <h2 class="text-lg font-semibold mb-6">Converting...</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Progress Bar -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-theme-text-secondary">Progress</span>
+                                <span id="progress-percent" class="text-sm font-semibold">0%</span>
+                            </div>
+                            <div class="w-full bg-theme-border rounded-full h-3 overflow-hidden">
+                                <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-300 w-0"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Info -->
+                        <div class="p-4 bg-theme-bg rounded-lg border border-theme-border">
+                            <p class="text-sm text-theme-text-secondary">Status</p>
+                            <p id="status-text" class="font-medium text-theme-text">Preparing conversion...</p>
+                        </div>
+                        
+                        <!-- Download Button (hidden until complete) -->
+                        <div id="download-section" class="hidden pt-4 border-t border-theme-border">
+                            <button id="download-btn" class="w-full px-4 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors font-semibold">
+                                📥 Download Converted File
+                            </button>
+                            <button id="convert-again-btn" class="w-full mt-3 px-4 py-3 border border-theme-border rounded-lg hover:bg-theme-bg transition-colors">
+                                Convert Another File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Notifications Container -->
+        <div id="notifications" class="fixed bottom-4 right-4 space-y-2 z-50 max-w-sm">
+            <!-- Notifications will be added here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

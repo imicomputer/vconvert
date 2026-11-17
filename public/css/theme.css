@@ -1,0 +1,393 @@
+/* Dark Theme - DEFAULT */
+:root,
+html[data-theme="dark"] {
+    /* Background Colors */
+    --color-bg: #0f172a;           /* Very dark blue-gray */
+    --color-surface: #1e293b;      /* Dark slate */
+    --color-border: #334155;       /* Slate */
+    
+    /* Text Colors */
+    --color-text: #f1f5f9;         /* Near white */
+    --color-text-secondary: #cbd5e1; /* Light slate */
+    
+    /* Accent Colors */
+    --color-accent: #10b981;       /* Emerald */
+    
+    /* Status Colors */
+    --color-success: #10b981;      /* Emerald */
+    --color-error: #ef4444;        /* Red */
+    --color-warning: #f59e0b;      /* Amber */
+    --color-info: #3b82f6;         /* Blue */
+}
+
+/* Light Theme - Optional for future */
+html[data-theme="light"] {
+    /* Background Colors */
+    --color-bg: #f8fafc;           /* Very light slate */
+    --color-surface: #ffffff;      /* White */
+    --color-border: #e2e8f0;       /* Light gray */
+    
+    /* Text Colors */
+    --color-text: #1e293b;         /* Dark slate */
+    --color-text-secondary: #64748b; /* Medium slate */
+    
+    /* Accent Colors */
+    --color-accent: #059669;       /* Dark emerald */
+    
+    /* Status Colors */
+    --color-success: #059669;
+    --color-error: #dc2626;
+    --color-warning: #d97706;
+    --color-info: #2563eb;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary);
+}
+
+/* Form Elements */
+input[type="radio"],
+input[type="checkbox"] {
+    accent-color: var(--color-accent);
+}
+
+input[type="file"] {
+    color: var(--color-text);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes progress-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* Utility Classes */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+.slide-in {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.bounce-animation {
+    animation: bounce 0.5s ease-out;
+}
+
+.shake-animation {
+    animation: shake 0.4s ease-in-out;
+}
+
+.pulse-animation {
+    animation: progress-pulse 2s infinite;
+}
+
+/* Step Indicators */
+.step-indicator {
+    transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+    background-color: var(--color-accent);
+    color: white;
+    transform: scale(1);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.step-indicator.completed {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+.step-line {
+    transition: background-color 0.3s ease;
+}
+
+/* Step Sections */
+.step-section {
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.step-section.active {
+    display: block;
+}
+
+/* Hardware Badge */
+#hardware-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#hardware-badge.nvidia .hw-indicator {
+    background-color: #76b900;
+}
+
+#hardware-badge.amd .hw-indicator {
+    background-color: #ed1c24;
+}
+
+#hardware-badge.cpu .hw-indicator {
+    background-color: #9ca3af;
+}
+
+/* Progress Bar */
+#progress-bar {
+    transition: width 0.3s ease;
+}
+
+#progress-bar.complete {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+/* Dropzone */
+#dropzone {
+    transition: all 0.2s ease;
+}
+
+#dropzone.hover {
+    border-color: var(--color-accent);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+#dropzone.active {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Buttons */
+button {
+    transition: all 0.2s ease;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Theme Toggle Button */
+#theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#theme-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+#theme-toggle .moon {
+    display: none;
+}
+
+html[data-theme="light"] #theme-toggle .sun {
+    display: none;
+}
+
+html[data-theme="light"] #theme-toggle .moon {
+    display: block;
+}
+
+/* Notification Styles */
+.notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
+
+.notification.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+.notification.warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+}
+
+.notification.info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: var(--color-info);
+    color: var(--color-info);
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    animation: bounce 0.5s ease-out;
+}
+
+.notification-content {
+    flex: 1;
+    padding-top: 2px;
+}
+
+.notification-close {
+    flex-shrink: 0;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    main {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .step-indicator {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+    
+    #notifications {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+}
