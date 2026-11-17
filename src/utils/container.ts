@@ -1,6 +1,7 @@
 import { HardwareDetector } from '../services/HardwareDetector.js';
 import { MediaProbeService } from '../services/MediaProbeService.js';
 import { StrategyRegistry } from '../strategies/StrategyRegistry.js';
+import { VideoConverterService } from '../services/VideoConverterService.js';
 import { logger } from './logger.js';
 
 /**
@@ -67,6 +68,14 @@ export async function initializeContainer(): Promise<void> {
   const strategyRegistry = new StrategyRegistry();
   container.register('strategyRegistry', strategyRegistry);
 
+  // Create and register VideoConverterService
+  const videoConverterService = new VideoConverterService(
+    hardwareDetector,
+    mediaProbeService,
+    strategyRegistry
+  );
+  container.register('videoConverterService', videoConverterService);
+
   logger.info('[DI] Container initialization complete');
 }
 
@@ -83,4 +92,8 @@ export function getMediaProbeService(): MediaProbeService {
 
 export function getStrategyRegistry(): StrategyRegistry {
   return container.get('strategyRegistry');
+}
+
+export function getVideoConverterService(): VideoConverterService {
+  return container.get('videoConverterService');
 }

@@ -1,6 +1,7 @@
 import { HardwareDetector } from '../services/HardwareDetector.js';
 import { MediaProbeService } from '../services/MediaProbeService.js';
 import { StrategyRegistry } from '../strategies/StrategyRegistry.js';
+import { VideoConverterService } from '../services/VideoConverterService.js';
 /**
  * Simple Dependency Injection Container
  * Manages singleton instances of services
@@ -36,4 +37,5 @@ export declare function initializeContainer(): Promise<void>;
 export declare function getHardwareDetector(): HardwareDetector;
 export declare function getMediaProbeService(): MediaProbeService;
 export declare function getStrategyRegistry(): StrategyRegistry;
+export declare function getVideoConverterService(): VideoConverterService;
 export {};
