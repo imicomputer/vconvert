@@ -48,7 +48,7 @@ class VideoConverterApp {
             console.log('✅ Application initialized');
         } catch (error) {
             console.error('Initialization error:', error);
-            this.notificationManager.showError('Failed to initialize application');
+            this.notificationManager?.showError('Failed to initialize application');
         }
     }
 
@@ -81,7 +81,11 @@ class VideoConverterApp {
         this.dropzoneHandler.init();
         
         // Setup dropzone listeners
-        this.dropzoneHandler.on('fileDropped', (data) => this.handleFileSelected(data.file));
+        this.dropzoneHandler.on('fileDropped', (data) => this.handleFileSelected(data.file, data.format));
+        this.dropzoneHandler.on('formatChange', (data) => {
+            // Update format selector when file format changes
+            this.formatSelector.setInputFormat(data.format);
+        });
         this.dropzoneHandler.on('error', (data) => {
             this.notificationManager.showError(data.message);
         });
@@ -102,7 +106,9 @@ class VideoConverterApp {
         formatRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const formatNext = document.getElementById('format-next');
-                formatNext.disabled = false;
+                if (!radio.disabled) {
+                    formatNext.disabled = false;
+                }
             });
         });
         
@@ -158,12 +164,12 @@ class VideoConverterApp {
     /**
      * Handle file selection
      */
-    handleFileSelected(file) {
+    handleFileSelected(file, fileFormat) {
         this.currentFile = file;
         
         // Extract file info
         const filename = file.name;
-        const fileExt = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+        const fileExt = fileFormat || this.extractExtension(filename);
         const fileSize = this.formatFileSize(file.size);
         
         // Update UI
@@ -173,7 +179,7 @@ class VideoConverterApp {
         document.getElementById('file-info').classList.remove('hidden');
         document.getElementById('dropzone').classList.add('hidden');
         
-        // Set format selector
+        // Set format selector with input format
         this.formatSelector.setInputFormat(fileExt);
         
         // Show notification
@@ -181,6 +187,15 @@ class VideoConverterApp {
         
         // Enable next step
         this.goToStep(2);
+    }
+
+    /**
+     * Extract file extension
+     */
+    extractExtension(filename) {
+        const lastDot = filename.lastIndexOf('.');
+        if (lastDot === -1) return '';
+        return filename.substring(lastDot + 1).toLowerCase();
     }
 
     /**
@@ -277,7 +292,6 @@ class VideoConverterApp {
         });
         
         // Show target section
-        const sectionId = `#step${step}-upload`;
         const sectionMap = {
             1: '#step1-upload',
             2: '#step2-format',
@@ -317,6 +331,9 @@ class VideoConverterApp {
         document.querySelectorAll('input[name="format"]').forEach(radio => radio.checked = false);
         document.getElementById('format-next').disabled = true;
         this.progressController.reset();
+        
+        // Clear dropzone
+        this.dropzoneHandler.clearSelection();
         
         this.goToStep(1);
         this.notificationManager.showInfo('Ready for new conversion');

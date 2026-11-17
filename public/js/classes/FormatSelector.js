@@ -1,6 +1,6 @@
 /**
  * FormatSelector Class
- * Manages video format selection
+ * Manages video format selection with dynamic filtering
  */
 
 import { SUPPORTED_FORMATS } from '../config.js';
@@ -18,6 +18,7 @@ export class FormatSelector {
      */
     setInputFormat(format) {
         this.inputFormat = format.toLowerCase();
+        this.updateUIFormatFiltering();
     }
 
     /**
@@ -29,6 +30,59 @@ export class FormatSelector {
         }
 
         return SUPPORTED_FORMATS.filter(fmt => fmt.value !== this.inputFormat);
+    }
+
+    /**
+     * Update format UI to reflect filtering
+     */
+    updateUIFormatFiltering() {
+        const formatRadios = document.querySelectorAll('input[name="format"]');
+        
+        formatRadios.forEach(radio => {
+            const format = radio.value;
+            const label = radio.closest('label');
+            const isDisabled = format === this.inputFormat;
+
+            // Update radio disabled state
+            radio.disabled = isDisabled;
+
+            if (label) {
+                // Smooth transition (200ms)
+                label.style.transition = 'opacity 200ms ease, text-decoration 200ms ease';
+                
+                if (isDisabled) {
+                    // Disable styling
+                    label.style.opacity = '0.5';
+                    label.style.textDecoration = 'line-through';
+                    label.style.cursor = 'not-allowed';
+                    
+                    // Add helper text if not already present
+                    let helper = label.querySelector('.format-helper');
+                    if (!helper) {
+                        helper = document.createElement('p');
+                        helper.className = 'format-helper text-sm text-theme-text-secondary mt-1';
+                        helper.textContent = '(Same as input format)';
+                        label.appendChild(helper);
+                    }
+                } else {
+                    // Enable styling
+                    label.style.opacity = '1';
+                    label.style.textDecoration = 'none';
+                    label.style.cursor = 'pointer';
+                    
+                    // Remove helper text if present
+                    const helper = label.querySelector('.format-helper');
+                    if (helper) {
+                        helper.remove();
+                    }
+                }
+            }
+        });
+
+        // Emit event for format filtering
+        this.emit('formatsFiltered', { 
+            availableFormats: this.getAvailableFormats()
+        });
     }
 
     /**
@@ -75,10 +129,28 @@ export class FormatSelector {
     }
 
     /**
+     * Set selected format programmatically
+     */
+    setSelectedFormat(format) {
+        const radio = document.querySelector(`input[name="format"][value="${format}"]`);
+        if (radio && !radio.disabled) {
+            radio.checked = true;
+            this.selectFormat(format);
+        }
+    }
+
+    /**
      * Get format details
      */
     getFormatDetails(format) {
         return SUPPORTED_FORMATS.find(fmt => fmt.value === format);
+    }
+
+    /**
+     * Get input format
+     */
+    getInputFormat() {
+        return this.inputFormat;
     }
 
     /**

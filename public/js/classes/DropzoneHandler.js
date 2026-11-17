@@ -1,6 +1,6 @@
 /**
  * DropzoneHandler Class
- * Manages drag-drop file input interactions
+ * Manages drag-drop file input interactions with format tracking
  */
 
 import { FILE_CONFIG } from '../config.js';
@@ -10,6 +10,7 @@ export class DropzoneHandler {
         this.dropzone = dropzoneElement;
         this.fileInput = fileInputElement;
         this.selectedFile = null;
+        this.inputFormat = null;
         this.listeners = {};
     }
 
@@ -73,8 +74,10 @@ export class DropzoneHandler {
      * Handle drag leave
      */
     handleDragLeave(e) {
-        this.dropzone.classList.remove('hover', 'active');
-        this.emit('unhighlight');
+        if (e.target === this.dropzone) {
+            this.dropzone.classList.remove('hover', 'active');
+            this.emit('unhighlight');
+        }
     }
 
     /**
@@ -112,8 +115,19 @@ export class DropzoneHandler {
             return;
         }
 
+        // Extract file extension (case-insensitive)
+        this.inputFormat = this.extractExtension(file.name);
+
         this.selectedFile = file;
-        this.emit('fileDropped', { file });
+        this.emit('fileDropped', { 
+            file,
+            format: this.inputFormat
+        });
+        
+        // Notify format change to listeners
+        this.emit('formatChange', { 
+            format: this.inputFormat 
+        });
     }
 
     /**
@@ -136,6 +150,15 @@ export class DropzoneHandler {
     }
 
     /**
+     * Extract file extension (case-insensitive, without dot)
+     */
+    extractExtension(filename) {
+        const lastDot = filename.lastIndexOf('.');
+        if (lastDot === -1) return '';
+        return filename.substring(lastDot + 1).toLowerCase();
+    }
+
+    /**
      * Get selected file
      */
     getSelectedFile() {
@@ -143,10 +166,18 @@ export class DropzoneHandler {
     }
 
     /**
+     * Get input file format
+     */
+    getInputFormat() {
+        return this.inputFormat;
+    }
+
+    /**
      * Clear selection
      */
     clearSelection() {
         this.selectedFile = null;
+        this.inputFormat = null;
         this.fileInput.value = '';
     }
 
