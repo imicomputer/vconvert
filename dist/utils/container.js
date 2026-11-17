@@ -2,6 +2,7 @@ import { HardwareDetector } from '../services/HardwareDetector.js';
 import { MediaProbeService } from '../services/MediaProbeService.js';
 import { StrategyRegistry } from '../strategies/StrategyRegistry.js';
 import { VideoConverterService } from '../services/VideoConverterService.js';
+import { fileCleanupManager } from '../services/FileCleanupManager.js';
 import { logger } from './logger.js';
 /**
  * Simple Dependency Injection Container
@@ -62,6 +63,9 @@ export async function initializeContainer() {
     // Create and register VideoConverterService
     const videoConverterService = new VideoConverterService(hardwareDetector, mediaProbeService, strategyRegistry);
     container.register('videoConverterService', videoConverterService);
+    // Register FileCleanupManager and start it
+    container.register('fileCleanupManager', fileCleanupManager);
+    fileCleanupManager.start();
     logger.info('[DI] Container initialization complete');
 }
 /**
@@ -78,5 +82,8 @@ export function getStrategyRegistry() {
 }
 export function getVideoConverterService() {
     return container.get('videoConverterService');
+}
+export function getFileCleanupManager() {
+    return container.get('fileCleanupManager');
 }
 //# sourceMappingURL=container.js.map

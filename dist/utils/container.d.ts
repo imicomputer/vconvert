@@ -38,4 +38,5 @@ export declare function getHardwareDetector(): HardwareDetector;
 export declare function getMediaProbeService(): MediaProbeService;
 export declare function getStrategyRegistry(): StrategyRegistry;
 export declare function getVideoConverterService(): VideoConverterService;
+export declare function getFileCleanupManager(): unknown;
 export {};

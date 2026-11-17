@@ -1,40 +1,52 @@
 import express from 'express';
-import cors from 'cors';
 import { logger } from './utils/logger.js';
 import { AppError } from './utils/errors.js';
+import apiRoutes from './routes/api.js';
 const app = express();
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-// Request logging middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// CORS
 app.use((req, res, next) => {
-    logger.info(`${req.method} ${req.path}`);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-// Routes
-app.get('/', (req, res) => {
-    res.json({ status: 'ok' });
+// Request logging
+app.use((req, res, next) => {
+    logger.debug(`${req.method} ${req.path}`);
+    next();
 });
+// API Routes
+app.use('/api', apiRoutes);
+// Static files
+app.use(express.static('public'));
+// Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'healthy' });
+    res.json({ status: 'ok' });
 });
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({ error: 'Not Found' });
-});
-// Error handling middleware
-app.use((err, req, res, next) => {
-    logger.error('Unhandled error', err);
-    if (err instanceof AppError) {
-        return res.status(err.statusCode).json(err.toJSON());
-    }
-    res.status(500).json({
-        error: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred',
-        code: 'INTERNAL_SERVER_ERROR',
-        timestamp: new Date().toISOString()
+    res.status(404).json({
+        error: 'NOT_FOUND',
+        message: `Route not found: ${req.method} ${req.path}`,
+        code: 'NOT_FOUND'
     });
+});
+// Error handler
+app.use((err, req, res, next) => {
+    logger.error(`Error: ${err.message}`);
+    if (err instanceof AppError) {
+        res.status(err.statusCode).json(err.toJSON());
+    }
+    else {
+        res.status(500).json({
+            error: 'INTERNAL_SERVER_ERROR',
+            message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+            code: 'INTERNAL_SERVER_ERROR'
+        });
+    }
 });
 export default app;
 //# sourceMappingURL=app.js.map

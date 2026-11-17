@@ -2,6 +2,7 @@ import { HardwareDetector } from '../services/HardwareDetector.js';
 import { MediaProbeService } from '../services/MediaProbeService.js';
 import { StrategyRegistry } from '../strategies/StrategyRegistry.js';
 import { VideoConverterService } from '../services/VideoConverterService.js';
+import { fileCleanupManager } from '../services/FileCleanupManager.js';
 import { logger } from './logger.js';
 
 /**
@@ -76,6 +77,10 @@ export async function initializeContainer(): Promise<void> {
   );
   container.register('videoConverterService', videoConverterService);
 
+  // Register FileCleanupManager and start it
+  container.register('fileCleanupManager', fileCleanupManager);
+  fileCleanupManager.start();
+
   logger.info('[DI] Container initialization complete');
 }
 
@@ -96,4 +101,8 @@ export function getStrategyRegistry(): StrategyRegistry {
 
 export function getVideoConverterService(): VideoConverterService {
   return container.get('videoConverterService');
+}
+
+export function getFileCleanupManager() {
+  return container.get('fileCleanupManager');
 }
