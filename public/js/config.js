@@ -4,7 +4,10 @@
  */
 
 // API Configuration
-export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000/api';
+const configuredApiBaseUrl = typeof process === 'undefined'
+    ? undefined
+    : process.env?.API_BASE_URL;
+export const API_BASE_URL = configuredApiBaseUrl || 'http://localhost:3000/api';
 
 // Supported Video Formats
 export const SUPPORTED_FORMATS = [

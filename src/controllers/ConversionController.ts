@@ -4,6 +4,7 @@ import { logger } from '../utils/logger.js';
 import { config } from '../config.js';
 import { getVideoConverterService, getStrategyRegistry } from '../utils/container.js';
 import { AppError } from '../utils/errors.js';
+import { fileCleanupManager } from '../services/FileCleanupManager.js';
 
 /**
  * ConversionController: Handles video conversion requests
@@ -72,6 +73,9 @@ export class ConversionController {
       // Start async conversion (fire-and-forget)
       const converterService = getVideoConverterService();
       converterService.convert(jobId, inputPath, outputPath, targetFormat, (job) => {
+        if (job.status === 'completed') {
+          fileCleanupManager.registerFile(jobId, outputPath);
+        }
         logger.debug(`[ConversionController] Job ${jobId} progress: ${job.progress}%`);
       }).catch((error) => {
         logger.error(`[ConversionController] Conversion failed for ${jobId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
