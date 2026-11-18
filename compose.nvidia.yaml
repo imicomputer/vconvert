@@ -19,7 +19,9 @@ services:
     ports:
       - "${PUBLISH_PORT:-3000}:${PORT:-3000}"
     volumes:
-      - uploads:${UPLOAD_DIR:-/tmp/uploads}
+      - type: volume
+        source: uploads
+        target: ${UPLOAD_DIR:-/tmp/uploads}
     expose:
       - "${PORT:-3000}"
     healthcheck:
