@@ -8,6 +8,7 @@
 - **Server:** Node.js, Express 4, TypeScript (strict compiler mode), ES modules.
 - **Browser client:** static HTML, CSS, and JavaScript ES modules under `public/`.
 - **Media tools:** FFmpeg for encoding and FFprobe for input inspection.
+- **Container deployment:** Multi-stage Docker image with Compose configurations for CPU, NVIDIA, and AMD GPU hosts.
 - **State:** process-local in-memory maps for jobs and managed output files; no database.
 - **Build output:** TypeScript sources in `src/` compile to `dist/`; static files are served from `public/`.
 
@@ -84,7 +85,7 @@ The browser's `API_BASE_URL` defaults to `http://localhost:3000/api`. Its source
 - Jobs and file tracking are memory-only; multiple server instances do not share state.
 - Concurrent conversions have no application-level queue or concurrency cap; size CPU, memory, GPU, and storage accordingly.
 - Tailwind CSS is loaded from a CDN by the page, so the browser needs network access to that CDN unless the frontend is changed to serve a local copy.
-- No Dockerfile, Compose file, Kubernetes manifests, reverse-proxy configuration, or CI pipeline is included in the repository.
+- Docker Compose deployment files support a CPU default, NVIDIA device reservations, and AMD `/dev/kfd`/`/dev/dri` access. Host GPU drivers/runtime must be installed separately. Kubernetes manifests, reverse-proxy configuration, and CI pipeline are not included.
 
 ## 6. Known limitations
 

@@ -101,8 +101,10 @@ export class HardwareDetector {
 
       try {
         const proc = spawn('ffmpeg', [
+          '-vaapi_device', config.vaapiDevice,
           '-f', 'lavfi',
           '-i', 'color=c=black:s=1280x720:d=0.1',
+          '-vf', 'format=nv12,hwupload',
           '-c:v', 'h264_vaapi',
           '-t', '0.1',
           '-f', 'null',

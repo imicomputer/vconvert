@@ -34,20 +34,64 @@ The build writes TypeScript output to `dist/`. `npm run dev` uses `tsx watch` to
 
 ## Environment configuration
 
-Create a local `.env` if you need to override supported settings. Do not commit this file.
+Create a local `.env` if you need to override supported settings. For Compose, copy `.env.example` to `.env`; Compose reads it for variable substitution and passes supported application settings into the container. Do not commit `.env`.
 
 ```dotenv
-NODE_ENV=development
+NODE_ENV=production
 PORT=3000
+PUBLISH_PORT=3000
 UPLOAD_DIR=/tmp/uploads
 MAX_FILE_SIZE_BYTES=2147483648
 FILE_TTL_SECONDS=600
 HARDWARE_DETECTION_TIMEOUT_MS=5000
 MEDIA_PROBE_TIMEOUT_MS=10000
 FILE_CLEANUP_INTERVAL_MS=30000
+AMD_VIDEO_GID=44
+AMD_RENDER_GID=109
+VAAPI_DEVICE=/dev/dri/renderD128
 ```
 
 See the authoritative configuration table in [Architecture & Application Documentation](./ARCHITECTURE.md#4-configuration). `FFMPEG_PATH`, `FFMPEG_TIMEOUT_MS`, and `LOG_LEVEL` occur in `.env.example` but currently do not control runtime behavior. The FFmpeg executable name is hard-coded as `ffmpeg`; both `ffmpeg` and `ffprobe` must be on the process `PATH`.
+
+## Docker Compose and Coolify
+
+The repository provides a multi-stage production `Dockerfile` and three Compose file choices. The default `compose.yaml` runs on CPU and persists uploads and converted files in the named `uploads` volume:
+
+```bash
+cp .env.example .env
+docker compose up --build -d
+docker compose logs -f
+```
+
+Open `http://localhost:${PUBLISH_PORT:-3000}`. `PORT` controls the port inside the container and `PUBLISH_PORT` the host-published port. The named volume is mounted at `UPLOAD_DIR` (default `/tmp/uploads`). Manage the volume separately when planning backups or removal; removing it deletes uploaded and converted media.
+
+For GPU acceleration, use the relevant Compose file instead of the default:
+
+```bash
+# NVIDIA host with NVIDIA Container Toolkit installed and configured:
+docker compose -f compose.nvidia.yaml up --build -d
+
+# AMD host with /dev/kfd and /dev/dri available:
+docker compose -f compose.amd.yaml up --build -d
+```
+
+The NVIDIA file requests all NVIDIA GPUs using the Compose device reservation API; the host needs a compatible NVIDIA driver and NVIDIA Container Toolkit. The AMD file maps `/dev/kfd` and `/dev/dri` into the container for VAAPI and adds the `video` and `render` supplemental groups. Set `AMD_VIDEO_GID` and `AMD_RENDER_GID` to the corresponding group IDs on the host if they differ from the defaults; set `VAAPI_DEVICE` if the host's render node is not `/dev/dri/renderD128`. The image includes FFmpeg and Mesa VAAPI drivers. GPU encoding still depends on host devices/drivers and the FFmpeg encoders available in the image; check `/api/hardware-status` and logs after deployment. CPU encoding remains available as a fallback.
+
+### Coolify Git Repository resource
+
+1. In Coolify, create a **Docker Compose** resource from a Git Repository and select the GitHub App/repository and branch.
+2. Set the Compose file path to `compose.yaml` for CPU, `compose.nvidia.yaml` for NVIDIA, or `compose.amd.yaml` for AMD. The GPU files extend the shared service definition in `compose.yaml`; keep that base file in the repository.
+3. Add the required variables in the Coolify resource's environment settings. Set at least `PORT=3000` and `UPLOAD_DIR=/tmp/uploads`; optionally set `PUBLISH_PORT`, file-size/retention values, and AMD host group IDs as needed. Do not add a separate `env_file` path: Coolify injects these environment variables during Compose deployment.
+4. Configure the domain/proxy to route to service `app` on the container port set by `PORT` (default `3000`). If using Coolify's managed proxy, follow the instance's Compose port-publishing guidance and avoid publishing a conflicting host port.
+5. Deploy and verify `/health` and `/api/hardware-status`. GPU variants require the matching GPU driver/runtime and device access on the Coolify host; selecting a GPU Compose file alone cannot install host drivers.
+
+For AMD, device permissions and host driver compatibility vary by distribution. If device access or hardware encoding is unavailable, inspect the container logs and group IDs, and verify that the host FFmpeg/driver stack supports VAAPI. These Compose configurations do not add authentication or rate limiting; place the app behind appropriate access controls before exposing it publicly.
+
+### Deployment Docker Compose dan Coolify (Bahasa Indonesia)
+
+`compose.yaml` adalah konfigurasi bawaan untuk CPU dan menyimpan berkas pada named volume `uploads`. Jalankan `docker compose up --build -d`. Untuk GPU, gunakan `compose.nvidia.yaml` pada host yang sudah memiliki NVIDIA Container Toolkit, atau `compose.amd.yaml` pada host AMD yang menyediakan `/dev/kfd` dan `/dev/dri`. Sesuaikan `AMD_VIDEO_GID` serta `AMD_RENDER_GID` dengan group ID host jika diperlukan, dan `VAAPI_DEVICE` jika lokasi render node berbeda dari `/dev/dri/renderD128`.
+
+Di Coolify, buat resource **Docker Compose** dari Git Repository melalui GitHub App, lalu pilih file Compose yang sesuai di pengaturan resource. File GPU mewarisi service dari `compose.yaml`, jadi kedua file harus ada di repository. Atur environment variable pada UI Coolify, minimal `PORT` dan `UPLOAD_DIR=/tmp/uploads`, lalu arahkan domain ke service `app` pada port internal `PORT`. Pastikan driver/runtime GPU dan akses perangkat sudah disiapkan pada host Coolify; berkas Compose tidak memasang driver pada host. Verifikasi deployment melalui `/health` dan `/api/hardware-status`.
 
 ## Validation commands
 
@@ -65,7 +109,7 @@ npm test
 - Restrict network access: the API has no authentication/rate limit and CORS is permissive.
 - Use an HTTPS reverse proxy and add authentication, request/concurrency limits, and suitable storage retention before any untrusted/public deployment.
 - Avoid multiple application instances unless a shared job store and shared output storage are added; current job and cleanup state is process-local.
-- The repository does not include a Dockerfile, Compose configuration, Kubernetes manifests, or CI workflow. Container/orchestrator deployment must be designed and tested by the operator rather than copied from older guides.
+- The repository includes Docker Compose files for CPU, NVIDIA, and AMD GPU deployments. It does not include Kubernetes manifests or reverse-proxy configuration; configure access controls and storage operations in the target environment.
 - The configured graceful shutdown waits for a fixed period; validate shutdown behavior in the target environment before relying on it for long-running conversions.
 
 ## GitHub contribution workflow

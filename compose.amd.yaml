@@ -1,0 +1,14 @@
+services:
+  app:
+    extends:
+      file: compose.yaml
+      service: app
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - "${AMD_VIDEO_GID:-44}"
+      - "${AMD_RENDER_GID:-109}"
+
+volumes:
+  uploads:

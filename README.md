@@ -46,6 +46,16 @@ npm start
 
 The server reads optional settings from a local `.env` file; see [`.env.example`](./.env.example) and [Development & Deployment](./docs/DEVELOPMENT_AND_DEPLOYMENT.md). Do not commit `.env` files, uploaded videos, or generated output.
 
+### Docker Compose and Coolify
+
+The repository includes a production Docker image and Compose configurations for CPU, NVIDIA, and AMD hosts. See [Docker Compose and Coolify deployment](./docs/DEVELOPMENT_AND_DEPLOYMENT.md#docker-compose-and-coolify) for setup, GPU host requirements, and Coolify Git Repository instructions.
+
+```bash
+docker compose up --build
+```
+
+This starts the CPU-compatible configuration by default at `http://localhost:3000`. To use a GPU, set the Coolify Compose file to `compose.nvidia.yaml` or `compose.amd.yaml`, or use the matching file with `docker compose -f` locally.
+
 ## Application usage
 
 1. Open the application URL in your browser.

@@ -11,7 +11,7 @@ This folder contains the project documentation, written against the implementati
 | [Architecture & Application Documentation](./ARCHITECTURE.md) | Components, conversion lifecycle, configuration, and known limitations |
 | [API Reference](./API.md) | HTTP endpoints, multipart upload, SSE, and errors |
 | [User Guide / How to Use](./USER_GUIDE.md) | Browser workflow and user troubleshooting |
-| [Development & Deployment Guide](./DEVELOPMENT_AND_DEPLOYMENT.md) | Prerequisites, local setup, configuration, operations, and GitHub workflow |
+| [Development & Deployment Guide](./DEVELOPMENT_AND_DEPLOYMENT.md) | Prerequisites, local setup, Docker Compose, Coolify, configuration, operations, and GitHub workflow |
 | [Test Plan & Results](./TEST_RESULTS.md) | Verification results from this checkout and recommended test coverage |
 
 ## Source-of-truth note

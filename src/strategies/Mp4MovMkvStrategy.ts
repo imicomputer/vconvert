@@ -1,5 +1,6 @@
 import { BaseEncodingStrategy, HardwareType } from './EncodingStrategy.js';
 import { MediaMetadata } from '../services/MediaProbeService.js';
+import { config } from '../config.js';
 
 /**
  * Strategy for MP4, MOV, MKV formats using H.264 codec
@@ -19,10 +20,14 @@ export class Mp4MovMkvStrategy extends BaseEncodingStrategy {
     metadata: MediaMetadata,
     hardwareType: HardwareType
   ): string[] {
-    const cmd = this.buildBaseCommand(inputPath, outputPath);
+    const cmd = hardwareType === 'amd'
+      ? ['-vaapi_device', config.vaapiDevice, ...this.buildBaseCommand(inputPath, outputPath)]
+      : this.buildBaseCommand(inputPath, outputPath);
 
-    // Add video filter with padding
-    cmd.push('-vf', this.getVideoFilterWithPadding());
+    const videoFilter = hardwareType === 'amd'
+      ? 'pad=ceil(iw/2)*2:ceil(ih/2)*2,format=nv12,hwupload'
+      : this.getVideoFilterWithPadding();
+    cmd.push('-vf', videoFilter);
 
     // Add hardware-specific video codec and settings
     switch (hardwareType) {

@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      UPLOAD_DIR: ${UPLOAD_DIR:-/tmp/uploads}
+      MAX_FILE_SIZE_BYTES: ${MAX_FILE_SIZE_BYTES:-2147483648}
+      FILE_TTL_SECONDS: ${FILE_TTL_SECONDS:-600}
+      HARDWARE_DETECTION_TIMEOUT_MS: ${HARDWARE_DETECTION_TIMEOUT_MS:-5000}
+      VAAPI_DEVICE: ${VAAPI_DEVICE:-/dev/dri/renderD128}
+      MEDIA_PROBE_TIMEOUT_MS: ${MEDIA_PROBE_TIMEOUT_MS:-10000}
+      FILE_CLEANUP_INTERVAL_MS: ${FILE_CLEANUP_INTERVAL_MS:-30000}
+    ports:
+      - "${PUBLISH_PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - uploads:${UPLOAD_DIR:-/tmp/uploads}
+    expose:
+      - "${PORT:-3000}"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:' + process.env.PORT + '/health').then(r => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1));"
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  uploads:

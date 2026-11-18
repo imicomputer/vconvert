@@ -12,6 +12,7 @@ export const config = {
   ffmpegPath: process.env.FFMPEG_PATH || 'ffmpeg',
   ffmpegTimeout: parseInt(process.env.FFMPEG_TIMEOUT_MS || '300000'),
   hardwareDetectionTimeout: parseInt(process.env.HARDWARE_DETECTION_TIMEOUT_MS || '5000'),
+  vaapiDevice: process.env.VAAPI_DEVICE || '/dev/dri/renderD128',
   mediaProbeTimeout: parseInt(process.env.MEDIA_PROBE_TIMEOUT_MS || '10000'),
   fileCleanupInterval: parseInt(process.env.FILE_CLEANUP_INTERVAL_MS || '30000')
 };

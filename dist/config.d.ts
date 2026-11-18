@@ -8,6 +8,7 @@ export declare const config: {
     ffmpegPath: string;
     ffmpegTimeout: number;
     hardwareDetectionTimeout: number;
+    vaapiDevice: string;
     mediaProbeTimeout: number;
     fileCleanupInterval: number;
 };
