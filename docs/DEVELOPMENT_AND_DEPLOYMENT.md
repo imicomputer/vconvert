@@ -56,7 +56,7 @@ See the authoritative configuration table in [Architecture & Application Documen
 
 ## Docker Compose and Coolify
 
-The repository provides a multi-stage production `Dockerfile` and three Compose file choices. The default `compose.yaml` runs on CPU and persists uploads and converted files in the named `uploads` volume:
+The repository provides a multi-stage production `Dockerfile` and three self-contained Compose file choices. The default `compose.yaml` runs on CPU and persists uploads and converted files in the named `uploads` volume:
 
 ```bash
 cp .env.example .env
@@ -83,7 +83,7 @@ The NVIDIA file requests all NVIDIA GPUs using the Compose device reservation AP
 ### Coolify Git Repository resource
 
 1. In Coolify, create a **Docker Compose** resource from a Git Repository and select the GitHub App/repository and branch.
-2. Set the Compose file path to `compose.yaml` for CPU, `compose.nvidia.yaml` for NVIDIA, or `compose.amd.yaml` for AMD. The GPU files extend the shared service definition in `compose.yaml`; keep that base file in the repository.
+2. Set the Compose file path to `compose.yaml` for CPU, `compose.nvidia.yaml` for NVIDIA, or `compose.amd.yaml` for AMD. Each file defines its own service and named volume so it can be selected as the Compose file directly.
 3. Add the required variables in the Coolify resource's environment settings. Set at least `PORT=3000` and `UPLOAD_DIR=/tmp/uploads`; optionally set `CONTAINER_NAME`, `PUBLISH_PORT`, file-size/retention values, and AMD host group IDs as needed. Do not add a separate `env_file` path: Coolify injects these environment variables during Compose deployment.
 4. Configure the domain/proxy to route to service `vconvert` on the container port set by `PORT` (default `3000`). If using Coolify's managed proxy, follow the instance's Compose port-publishing guidance and avoid publishing a conflicting host port.
 5. Deploy and verify `/health` and `/api/hardware-status`. GPU variants require the matching GPU driver/runtime and device access on the Coolify host; selecting a GPU Compose file alone cannot install host drivers.
@@ -92,9 +92,9 @@ For AMD, device permissions and host driver compatibility vary by distribution. 
 
 ### Deployment Docker Compose dan Coolify (Bahasa Indonesia)
 
-`compose.yaml` adalah konfigurasi bawaan untuk CPU dan menyimpan berkas pada named volume `uploads`. Jalankan `docker compose up --build -d`. Untuk GPU, gunakan `compose.nvidia.yaml` pada host yang sudah memiliki NVIDIA Container Toolkit, atau `compose.amd.yaml` pada host AMD yang menyediakan `/dev/kfd` dan `/dev/dri`. Sesuaikan `AMD_VIDEO_GID` serta `AMD_RENDER_GID` dengan group ID host jika diperlukan, dan `VAAPI_DEVICE` jika lokasi render node berbeda dari `/dev/dri/renderD128`.
+`compose.yaml` adalah konfigurasi bawaan untuk CPU dan menyimpan berkas pada named volume `uploads`. Jalankan `docker compose up --build -d`. Untuk GPU, gunakan `compose.nvidia.yaml` pada host yang sudah memiliki NVIDIA Container Toolkit, atau `compose.amd.yaml` pada host AMD yang menyediakan `/dev/kfd` dan `/dev/dri`. Setiap file Compose GPU dapat dipilih langsung tanpa `extends` atau file Compose tambahan. Sesuaikan `AMD_VIDEO_GID` serta `AMD_RENDER_GID` dengan group ID host jika diperlukan, dan `VAAPI_DEVICE` jika lokasi render node berbeda dari `/dev/dri/renderD128`.
 
-Di Coolify, buat resource **Docker Compose** dari Git Repository melalui GitHub App, lalu pilih file Compose yang sesuai di pengaturan resource. File GPU mewarisi service dari `compose.yaml`, jadi kedua file harus ada di repository. Atur environment variable pada UI Coolify, minimal `PORT` dan `UPLOAD_DIR=/tmp/uploads`; atur `CONTAINER_NAME` jika ingin nama container tertentu. Nama container harus unik pada host dan dapat menghalangi scaling ke beberapa replika. Arahkan domain ke service `vconvert` pada port internal `PORT`. Pastikan driver/runtime GPU dan akses perangkat sudah disiapkan pada host Coolify; berkas Compose tidak memasang driver pada host. Verifikasi deployment melalui `/health` dan `/api/hardware-status`.
+Di Coolify, buat resource **Docker Compose** dari Git Repository melalui GitHub App, lalu pilih file Compose yang sesuai di pengaturan resource. Setiap file GPU mendefinisikan service serta volume sendiri dan dapat dipilih langsung. Atur environment variable pada UI Coolify, minimal `PORT` dan `UPLOAD_DIR=/tmp/uploads`; atur `CONTAINER_NAME` jika ingin nama container tertentu. Nama container harus unik pada host dan dapat menghalangi scaling ke beberapa replika. Arahkan domain ke service `vconvert` pada port internal `PORT`. Pastikan driver/runtime GPU dan akses perangkat sudah disiapkan pada host Coolify; berkas Compose tidak memasang driver pada host. Verifikasi deployment melalui `/health` dan `/api/hardware-status`.
 
 ## Validation commands
 
