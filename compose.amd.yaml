@@ -1,8 +1,8 @@
 services:
-  app:
+  vconvert:
     extends:
       file: compose.yaml
-      service: app
+      service: vconvert
     devices:
       - /dev/kfd:/dev/kfd
       - /dev/dri:/dev/dri

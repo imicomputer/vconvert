@@ -1,5 +1,6 @@
 services:
   vconvert:
+    container_name: ${CONTAINER_NAME:-vconvert}
     build:
       context: .
       dockerfile: Dockerfile
