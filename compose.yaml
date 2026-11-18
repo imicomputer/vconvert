@@ -1,5 +1,5 @@
 services:
-  app:
+  vconvert:
     build:
       context: .
       dockerfile: Dockerfile
