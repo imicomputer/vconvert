@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 export interface MediaMetadata {
     duration: number;
     width: number;
@@ -9,6 +10,8 @@ export interface MediaMetadata {
     totalFrames: number;
 }
 export declare class MediaProbeService {
+    private readonly spawnProcess;
+    constructor(spawnProcess?: typeof spawn);
     probeFile(filePath: string): Promise<MediaMetadata>;
     private parseProbeOutput;
 }

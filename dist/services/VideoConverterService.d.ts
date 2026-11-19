@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import { HardwareDetector } from './HardwareDetector.js';
 import { MediaProbeService } from './MediaProbeService.js';
 import { StrategyRegistry } from '../strategies/StrategyRegistry.js';
@@ -30,10 +31,11 @@ export declare class VideoConverterService {
     private hardwareDetector;
     private mediaProbeService;
     private strategyRegistry;
+    private readonly spawnProcess;
     private jobs;
     private processes;
     private lastProgress;
-    constructor(hardwareDetector: HardwareDetector, mediaProbeService: MediaProbeService, strategyRegistry: StrategyRegistry);
+    constructor(hardwareDetector: HardwareDetector, mediaProbeService: MediaProbeService, strategyRegistry: StrategyRegistry, spawnProcess?: typeof spawn);
     /**
      * Convert a video file to target format
      * Validates Property 4: GPU Fallback Monotonicity (fallback on error, no recovery)

@@ -3,6 +3,9 @@ import { logger } from '../utils/logger.js';
 import { config } from '../config.js';
 import { AppError } from '../utils/errors.js';
 export class MediaProbeService {
+    constructor(spawnProcess = spawn) {
+        this.spawnProcess = spawnProcess;
+    }
     async probeFile(filePath) {
         logger.debug(`Probing media file: ${filePath}`);
         return new Promise((resolve, reject) => {
@@ -16,7 +19,7 @@ export class MediaProbeService {
                 reject(new AppError(`Media probe timeout after ${config.mediaProbeTimeout}ms for: ${filePath}`, 'PROBE_TIMEOUT', 500));
             }, config.mediaProbeTimeout || 10000);
             try {
-                proc = spawn('ffprobe', [
+                proc = this.spawnProcess('ffprobe', [
                     '-v', 'quiet',
                     '-print_format', 'json',
                     '-show_format',

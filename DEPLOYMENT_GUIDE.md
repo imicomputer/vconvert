@@ -65,6 +65,31 @@ npm start
 
 ---
 
+## Automated Tests
+
+Run the backend unit, frontend DOM, and API integration suites with:
+
+```bash
+npm test
+```
+
+Run browser workflow tests separately. They require Playwright's Chromium browser plus FFmpeg and FFprobe:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Validate CPU, AMD, and NVIDIA Compose configuration and upload/port overrides with Docker and Python 3:
+
+```bash
+npm run test:deployment
+```
+
+The API and browser tests include requirement-level assertions. A failing assertion indicates an implementation gap and should not be reported as a passing test.
+
+---
+
 ## Docker Deployment
 
 ### Build Docker Image

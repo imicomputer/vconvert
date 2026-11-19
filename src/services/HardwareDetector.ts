@@ -12,6 +12,8 @@ export interface HardwareStatus {
 export class HardwareDetector {
   private status: HardwareStatus | null = null;
 
+  constructor(private readonly spawnProcess: typeof spawn = spawn) {}
+
   async detectAvailableAccelerators(): Promise<HardwareStatus> {
     logger.info('Starting hardware acceleration detection...');
 
@@ -56,7 +58,7 @@ export class HardwareDetector {
       }, config.hardwareDetectionTimeout);
 
       try {
-        const proc = spawn('ffmpeg', [
+        const proc = this.spawnProcess('ffmpeg', [
           '-f', 'lavfi',
           '-i', 'color=c=black:s=1280x720:d=0.1',
           '-c:v', 'h264_nvenc',
@@ -100,7 +102,7 @@ export class HardwareDetector {
       }, config.hardwareDetectionTimeout);
 
       try {
-        const proc = spawn('ffmpeg', [
+        const proc = this.spawnProcess('ffmpeg', [
           '-vaapi_device', config.vaapiDevice,
           '-f', 'lavfi',
           '-i', 'color=c=black:s=1280x720:d=0.1',

@@ -15,6 +15,8 @@ export interface MediaMetadata {
 }
 
 export class MediaProbeService {
+  constructor(private readonly spawnProcess: typeof spawn = spawn) {}
+
   async probeFile(filePath: string): Promise<MediaMetadata> {
     logger.debug(`Probing media file: ${filePath}`);
 
@@ -31,7 +33,7 @@ export class MediaProbeService {
       }, config.mediaProbeTimeout || 10000);
 
       try {
-        proc = spawn('ffprobe', [
+        proc = this.spawnProcess('ffprobe', [
           '-v', 'quiet',
           '-print_format', 'json',
           '-show_format',

@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 export interface HardwareStatus {
     nvidia: boolean;
     amd: boolean;
@@ -5,7 +6,9 @@ export interface HardwareStatus {
     detectionTime: Date;
 }
 export declare class HardwareDetector {
+    private readonly spawnProcess;
     private status;
+    constructor(spawnProcess?: typeof spawn);
     detectAvailableAccelerators(): Promise<HardwareStatus>;
     getStatus(): HardwareStatus;
     private testNvidiaNVENC;

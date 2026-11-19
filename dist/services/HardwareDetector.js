@@ -2,7 +2,8 @@ import { spawn } from 'child_process';
 import { logger } from '../utils/logger.js';
 import { config } from '../config.js';
 export class HardwareDetector {
-    constructor() {
+    constructor(spawnProcess = spawn) {
+        this.spawnProcess = spawnProcess;
         this.status = null;
     }
     async detectAvailableAccelerators() {
@@ -43,7 +44,7 @@ export class HardwareDetector {
                 resolve(false);
             }, config.hardwareDetectionTimeout);
             try {
-                const proc = spawn('ffmpeg', [
+                const proc = this.spawnProcess('ffmpeg', [
                     '-f', 'lavfi',
                     '-i', 'color=c=black:s=1280x720:d=0.1',
                     '-c:v', 'h264_nvenc',
@@ -81,7 +82,7 @@ export class HardwareDetector {
                 resolve(false);
             }, config.hardwareDetectionTimeout);
             try {
-                const proc = spawn('ffmpeg', [
+                const proc = this.spawnProcess('ffmpeg', [
                     '-vaapi_device', config.vaapiDevice,
                     '-f', 'lavfi',
                     '-i', 'color=c=black:s=1280x720:d=0.1',

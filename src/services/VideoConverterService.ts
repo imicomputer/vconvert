@@ -42,7 +42,8 @@ export class VideoConverterService {
   constructor(
     private hardwareDetector: HardwareDetector,
     private mediaProbeService: MediaProbeService,
-    private strategyRegistry: StrategyRegistry
+    private strategyRegistry: StrategyRegistry,
+    private readonly spawnProcess: typeof spawn = spawn
   ) {}
 
   /**
@@ -181,7 +182,7 @@ export class VideoConverterService {
       try {
         logger.debug(`[Converter] Spawning FFmpeg: ffmpeg ${ffmpegArgs.slice(0, 5).join(' ')}...`);
         
-        const proc = spawn('ffmpeg', ffmpegArgs, {
+        const proc = this.spawnProcess('ffmpeg', ffmpegArgs, {
           stdio: ['pipe', 'pipe', 'pipe']
         });
 

@@ -7,10 +7,11 @@ import { AppError } from '../utils/errors.js';
  * Validates Property 7: Progress Monotonicity
  */
 export class VideoConverterService {
-    constructor(hardwareDetector, mediaProbeService, strategyRegistry) {
+    constructor(hardwareDetector, mediaProbeService, strategyRegistry, spawnProcess = spawn) {
         this.hardwareDetector = hardwareDetector;
         this.mediaProbeService = mediaProbeService;
         this.strategyRegistry = strategyRegistry;
+        this.spawnProcess = spawnProcess;
         this.jobs = new Map();
         this.processes = new Map();
         this.lastProgress = new Map(); // Track for monotonicity
@@ -113,7 +114,7 @@ export class VideoConverterService {
         return new Promise((resolve, reject) => {
             try {
                 logger.debug(`[Converter] Spawning FFmpeg: ffmpeg ${ffmpegArgs.slice(0, 5).join(' ')}...`);
-                const proc = spawn('ffmpeg', ffmpegArgs, {
+                const proc = this.spawnProcess('ffmpeg', ffmpegArgs, {
                     stdio: ['pipe', 'pipe', 'pipe']
                 });
                 this.processes.set(job.jobId, proc);
