@@ -9,6 +9,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: ${PORT:-3000}
+      PUBLISH_PORT: ${PUBLISH_PORT:-3000}
       UPLOAD_DIR: ${UPLOAD_DIR:-/tmp/uploads}
       MAX_FILE_SIZE_BYTES: ${MAX_FILE_SIZE_BYTES:-2147483648}
       FILE_TTL_SECONDS: ${FILE_TTL_SECONDS:-600}
