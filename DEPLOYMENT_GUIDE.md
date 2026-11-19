@@ -1,8 +1,30 @@
 # Video Converter Web Application - Deployment Guide
 
 **Version**: 1.0.0  
-**Last Updated**: 2026-11-17  
+**Last Updated**: 2026-11-19
+
 **Status**: Production Ready
+
+## Important Note for AI Agents
+
+When continuing work on this project, follow these steps before making changes:
+
+1. Read the complete `.kiro/specs/video-converter-app/requirements.md` and the relevant deployment documentation. Treat the requirements and current repository state as the sources of truth; do not rely on summaries from previous sessions alone.
+2. Check `git status` and inspect the relevant diff. Preserve existing user, formatter, and generated changes; do not overwrite or revert them unless explicitly asked.
+3. Read the current contents of all relevant Compose files before editing, especially the file selected for deployment. Do not assume files are unchanged since the previous session.
+4. Preserve the `UPLOAD_DIR` environment-variable override. Keep the application environment value and volume target aligned, and use long volume syntax if needed to avoid ambiguity in Compose parsers.
+5. State a brief, testable hypothesis before editing and make the smallest change that addresses it. Do not deploy or expand the task scope unless explicitly requested.
+6. Validate all Compose variants after editing and verify that a custom `UPLOAD_DIR` value is applied to both the container environment and volume target:
+
+   ```bash
+   for f in compose.yaml compose.amd.yaml compose.nvidia.yaml; do
+     docker compose -f "$f" config --quiet || exit 1
+   done
+
+   UPLOAD_DIR=/custom/uploads docker compose -f compose.nvidia.yaml config
+   ```
+
+   Repeat the override check for another Compose variant if that is the deployment target. Report which checks were actually run and any that could not be verified.
 
 ---
 
