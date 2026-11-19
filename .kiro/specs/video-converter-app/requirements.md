@@ -134,6 +134,7 @@ The Video Converter Web Application is a full-stack web platform that enables us
 7. WHEN Job is created, THE System SHALL begin background transcoding process asynchronously
 8. WHEN conversion request is processed successfully, THE Backend SHALL respond with HTTP 200 status code and JSON object containing 'jobId' field
 9. WHEN conversion request is invalid (missing file, invalid format, etc.), THE Backend SHALL respond with HTTP 400 status code and descriptive error message
+10. WHEN an uploaded file exceeds the configured maximum file size, THE System SHALL reject it before creating a job or starting conversion and respond with HTTP 413 and error code 'FILE_TOO_LARGE'
 
 ### Requirement 10: Real-Time Conversion Progress Streaming
 

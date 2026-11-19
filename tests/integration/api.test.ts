@@ -29,11 +29,14 @@ interface TestJob {
   totalFrames: number;
   startTime: Date;
   endTime: Date;
+  originalFilename?: string;
 }
 
 const jobs = new Map<string, TestJob>();
+let conversionCalls = 0;
 const converter = {
   convert(jobId: string, inputPath: string, outputPath: string, targetFormat: string, onProgress: (job: TestJob) => void) {
+    conversionCalls += 1;
     const job: TestJob = {
       jobId, inputPath, outputPath, targetFormat, status: 'completed',
       progress: 100, currentFrame: 10, totalFrames: 10,
@@ -112,14 +115,23 @@ test('conversion endpoint rejects missing upload, format, unsupported format, an
 });
 
 test('conversion endpoint enforces the configured upload-size limit', async () => {
+  const callsBeforeUpload = conversionCalls;
   const oversized = await submitUpload('mp4', 'large.mkv', 'x'.repeat(1024));
   assert.equal(oversized.status, 413);
+  const error = await oversized.json() as { error: string; code: string };
+  assert.equal(error.error, 'FILE_TOO_LARGE');
+  assert.equal(error.code, 'FILE_TOO_LARGE');
+  assert.equal(conversionCalls, callsBeforeUpload);
 });
 
 test('conversion rejects a non-video file with the requirement error', async () => {
+  const callsBeforeUpload = conversionCalls;
   const response = await submitUpload('mp4', 'notes.txt', 'not a video');
   assert.equal(response.status, 400);
-  assert.equal((await response.json() as { error: string }).error, 'UNSUPPORTED_FILE_TYPE');
+  const error = await response.json() as { error: string; code: string };
+  assert.equal(error.error, 'UNSUPPORTED_FILE_TYPE');
+  assert.equal(error.code, 'UNSUPPORTED_FILE_TYPE');
+  assert.equal(conversionCalls, callsBeforeUpload);
 });
 
 test('SSE completion event uses the required terminal status and download URL', async () => {

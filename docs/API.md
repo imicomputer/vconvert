@@ -58,7 +58,7 @@ curl -X POST \
 
 The job initially probes the file and then encodes it. A response means the job was started, not that conversion completed.
 
-**Application validation errors:** `400` for missing file, missing format, unsupported target format, or same source/target extension. `413` is used by the controller's explicit over-limit check, but Multer may reject an oversized upload before that controller check, in which case the general Express error handler determines the response. Media probing happens asynchronously after the job ID is returned; unreadable media is reported as a failed job in the SSE stream, not as a request-level validation response.
+**Application validation errors:** `400` for missing file, missing format, unsupported target format, or same source/target extension. An upload exceeding `MAX_FILE_SIZE_BYTES` is rejected before job creation with HTTP `413` and error code `FILE_TOO_LARGE`. Media probing happens asynchronously after the job ID is returned; unreadable media is reported as a failed job in the SSE stream, not as a request-level validation response.
 
 Application error body:
 
@@ -80,7 +80,7 @@ const source = new EventSource(`/api/progress/${jobId}`);
 source.onmessage = ({ data }) => {
   const job = JSON.parse(data);
   console.log(job.status, job.progress);
-  if (job.status === 'completed' || job.status === 'failed') source.close();
+  if (job.status === 'done' || job.status === 'error') source.close();
 };
 ```
 
@@ -90,17 +90,17 @@ Example event data:
 {
   "jobId": "550e8400-e29b-41d4-a716-446655440000",
   "progress": 42,
-  "status": "encoding",
+  "status": "processing",
   "currentFrame": 1260,
   "totalFrames": 3000
 }
 ```
 
-On completion, the payload also contains `downloadUrl`, such as `/api/download/{jobId}`. On failure it may contain `errorMessage`. Job state is in memory; an unknown or restarted-server job returns a `JOB_NOT_FOUND` error.
+While a job is active, `status` is `processing`. On completion, the terminal event uses `status: "done"` and includes `downloadUrl`, such as `/api/download/{jobId}`. On failure, it uses `status: "error"` and may include `errorMessage`. Job state is in memory; an unknown or restarted-server job returns a `JOB_NOT_FOUND` error.
 
 ### `GET /api/download/{jobId}`
 
-Downloads the output for a completed job. The response is an attachment named `converted.{targetFormat}`. This request resets the output's TTL.
+Downloads the output for a completed job. The response is an attachment using the uploaded file's original basename and the target extension (for example, `sample.mp4`). This request resets the output's TTL.
 
 - `404 JOB_NOT_FOUND`: the job ID is unknown.
 - `400 JOB_NOT_READY`: the job has not completed.

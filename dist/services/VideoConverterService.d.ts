@@ -17,6 +17,7 @@ export interface ConversionJob {
     startTime: Date;
     endTime?: Date;
     error?: string;
+    originalFilename?: string;
 }
 /**
  * Progress callback interface

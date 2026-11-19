@@ -3,7 +3,7 @@
 **Verification date:** 2026-11-19
 
 **Scope:** Current repository checkout  
-**Status:** Automated tests are implemented. Unit, frontend DOM, and Compose checks pass; API and one browser acceptance assertion expose current implementation gaps listed below.
+**Status:** Automated unit, frontend DOM, API integration, browser E2E, and Compose checks pass.
 
 ## 1. Executed checks
 
@@ -17,8 +17,8 @@
 | Container API conversion smoke test | Temporary Docker container, `curl`, generated 1-second MKV, SSE, download, `ffprobe` | **Passed on CPU** — `/health` and `/api/hardware-status` responded; status was `cpu`; conversion completed over SSE; download succeeded; FFprobe identified an MP4 container with duration 1.045 seconds |
 | Backend unit tests | `npm run test:unit` | **Passed** — 15 tests, including all eight strategies, hardware priority/timeouts, FFprobe parse/error/timeout, GPU-to-CPU fallback, and cleanup TTL/reset |
 | Frontend DOM tests | `npm run test:frontend` | **Passed** — 8 jsdom tests for dropzone, file validation, format filtering, progress, notifications, theme persistence, API errors, and SSE completion |
-| API integration tests | `npm run test:integration` | **Partial** — 3 passed; 4 requirement assertions fail against current behavior (see section 3) |
-| Browser E2E | `npm run test:e2e` in Playwright 1.65.1 image with FFmpeg installed | **Partial** — dark/mobile and unsupported-file tests passed; conversion/download reaches completion but expected original output filename differs from actual filename |
+| API integration tests | `npm run test:integration` | **Passed** — 7 tests, including HTTP 413/`FILE_TOO_LARGE`, unsupported input rejection, SSE terminal status, download filename, and TTL reset |
+| Browser E2E | `npm run test:e2e` in Playwright 1.65.1 image with FFmpeg installed | **Passed** — 3 tests for dark/mobile UI, unsupported-file feedback, conversion, media probing, original download filename, and reset flow |
 | Compose deployment checks | `npm run test:deployment` | **Passed** — all three Compose variants parsed; custom upload path and port mapping verified; empty upload path falls back to `/tmp/uploads` |
 
 The tool-version check only confirms availability on the verification host; it does not establish a minimum supported version or validate another deployment environment.
@@ -29,18 +29,18 @@ The repository now has Node's built-in test runner via `tsx`, jsdom frontend tes
 
 `npm test` runs unit, frontend DOM, and API integration tests. `npm run test:e2e` and `npm run test:deployment` run separately because they require browser/system tools or Docker.
 
-## 3. Requirement Mismatches Found
+## 3. Requirement Fixes Verified
 
-The following assertions intentionally remain failing because behavior fixes were outside the approved scope:
+The following previously failing assertions now pass:
 
-| Requirement | Expected | Observed |
+| Requirement | Verified behavior |
 |---|---|---|
-| Upload size limit (deployment/API contract) | HTTP 413 for a file exceeding the configured limit | HTTP 500 from the current Multer error path |
-| Requirement 31: unsupported file type | Reject non-video file with HTTP 400 | `.txt` upload is accepted and starts a job |
-| Requirement 10: successful terminal SSE event | `status: "done"` | `status: "completed"` |
-| Requirement 22: downloaded filename | Original basename with target extension, e.g. `sample.mp4` | `converted.mp4` |
+| Upload size limit | Oversized uploads return HTTP 413 with `FILE_TOO_LARGE`; converter is not called |
+| Requirement 31: unsupported file type | Unrecognized input extensions return HTTP 400 with `UNSUPPORTED_FILE_TYPE` before job creation |
+| Requirement 10: successful terminal SSE event | Completed jobs emit `status: "done"`; failed jobs map to `status: "error"` |
+| Requirement 22: downloaded filename | Download preserves the uploaded basename and uses the selected output extension |
 
-The unit and DOM tests pass independently. API integration has 3 passing and 4 failing tests; Playwright has 2 passing tests and one failing filename assertion. The download test also verifies file content and TTL reset before the filename assertion.
+Unit (15), frontend DOM (8), API integration (7), browser E2E (3), and deployment checks pass. The download test also verifies file content and TTL reset.
 
 Use generated small test media or fixtures with redistribution rights. Do not commit private user videos or secrets.
 

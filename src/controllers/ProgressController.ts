@@ -3,6 +3,12 @@ import { logger } from '../utils/logger.js';
 import { getVideoConverterService } from '../utils/container.js';
 import { AppError } from '../utils/errors.js';
 
+function toEventStatus(status: string): 'processing' | 'done' | 'error' {
+  if (status === 'completed') return 'done';
+  if (status === 'failed') return 'error';
+  return 'processing';
+}
+
 /**
  * ProgressController: Streams conversion progress via Server-Sent Events (SSE)
  */
@@ -33,7 +39,7 @@ export class ProgressController {
       res.write(`data: ${JSON.stringify({
         jobId,
         progress: job.progress,
-        status: job.status,
+        status: toEventStatus(job.status),
         currentFrame: job.currentFrame,
         totalFrames: job.totalFrames
       })}\n\n`);
@@ -51,7 +57,7 @@ export class ProgressController {
         const event = {
           jobId,
           progress: currentJob.progress,
-          status: currentJob.status,
+          status: toEventStatus(currentJob.status),
           currentFrame: currentJob.currentFrame,
           totalFrames: currentJob.totalFrames
         };

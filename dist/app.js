@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import { logger } from './utils/logger.js';
 import { AppError } from './utils/errors.js';
 import apiRoutes from './routes/api.js';
@@ -37,6 +38,11 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
     logger.error(`Error: ${err.message}`);
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        const appError = new AppError('Uploaded file exceeds the maximum allowed size', 'FILE_TOO_LARGE', 413);
+        res.status(appError.statusCode).json(appError.toJSON());
+        return;
+    }
     if (err instanceof AppError) {
         res.status(err.statusCode).json(err.toJSON());
     }

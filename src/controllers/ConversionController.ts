@@ -6,6 +6,10 @@ import { getVideoConverterService, getStrategyRegistry } from '../utils/containe
 import { AppError } from '../utils/errors.js';
 import { fileCleanupManager } from '../services/FileCleanupManager.js';
 
+const supportedInputFormats = new Set([
+  'mp4', 'mkv', 'webm', 'avi', 'mov', 'flv', 'wmv', '3gp', 'mpeg', 'ogg'
+]);
+
 /**
  * ConversionController: Handles video conversion requests
  */
@@ -53,6 +57,14 @@ export class ConversionController {
       const inputExtMatch = inputFilename.match(/\.([^.]+)$/);
       const inputFormat = inputExtMatch ? inputExtMatch[1].toLowerCase() : '';
 
+      if (!supportedInputFormats.has(inputFormat)) {
+        throw new AppError(
+          'Unsupported file format. Please upload a video file.',
+          'UNSUPPORTED_FILE_TYPE',
+          400
+        );
+      }
+
       // Validate target format != input format
       if (inputFormat.toLowerCase() === targetFormat.toLowerCase()) {
         throw new AppError(
@@ -73,6 +85,7 @@ export class ConversionController {
       // Start async conversion (fire-and-forget)
       const converterService = getVideoConverterService();
       converterService.convert(jobId, inputPath, outputPath, targetFormat, (job) => {
+        job.originalFilename = inputFilename;
         if (job.status === 'completed') {
           fileCleanupManager.registerFile(jobId, outputPath);
         }

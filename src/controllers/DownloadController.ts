@@ -3,6 +3,7 @@ import { logger } from '../utils/logger.js';
 import { getVideoConverterService } from '../utils/container.js';
 import { fileCleanupManager } from '../services/FileCleanupManager.js';
 import { AppError } from '../utils/errors.js';
+import { parse } from 'node:path';
 
 /**
  * DownloadController: Handles file download and cleanup integration
@@ -44,7 +45,8 @@ export class DownloadController {
       logger.debug(`[DownloadController] TTL reset for ${jobId}`);
 
       // Send file
-      res.download(managedFile.path, `converted.${job.targetFormat}`, (error) => {
+      const baseName = parse(job.originalFilename ?? '').name || 'converted';
+      res.download(managedFile.path, `${baseName}.${job.targetFormat}`, (error) => {
         if (error) {
           logger.error(`[DownloadController] Download error for ${jobId}: ${error.message}`);
         } else {
