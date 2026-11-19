@@ -177,7 +177,7 @@
 
 ## 🎯 Project Summary
 
-**Video Converter Web Application v1.0.0**
+**Video Converter Web Application v0.2.0**
 
 A full-stack, production-ready web application for converting video files between 8 popular formats with:
 - Automatic GPU acceleration detection (NVIDIA/AMD with CPU fallback)

@@ -2,7 +2,7 @@
 
 VConvert is a browser-based video conversion application. An Express and TypeScript server accepts video uploads, probes media with FFprobe, converts with FFmpeg, streams job progress over Server-Sent Events (SSE), and makes completed files available for download. It supports CPU encoding and attempts NVIDIA NVENC or AMD VAAPI acceleration where available.
 
-> **Project status:** The TypeScript build is verified. Automated tests are not implemented yet (`npm test` currently prints a placeholder). Review [the verification report](./docs/TEST_RESULTS.md) and [known limitations](./docs/ARCHITECTURE.md#known-limitations) before using this project beyond local development.
+> **Project status:** Version 0.2.0 includes the TypeScript build, automated unit/frontend/integration suites, deployment validation, and development-only Swagger API documentation. Review [the verification report](./docs/TEST_RESULTS.md) and [known limitations](./docs/ARCHITECTURE.md#known-limitations) before production deployment.
 
 ## Features
 
@@ -37,7 +37,9 @@ ffprobe -version
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). For a compiled run instead:
+Open [http://localhost:3000](http://localhost:3000). Development Swagger UI is available at [http://localhost:3000/api-docs/](http://localhost:3000/api-docs/), and the OpenAPI JSON is at [http://localhost:3000/api-docs/openapi.json](http://localhost:3000/api-docs/openapi.json). Swagger is not mounted in production.
+
+For a compiled run instead:
 
 ```bash
 npm run build

@@ -4,6 +4,15 @@
 **Authentication:** none  
 **Content types:** JSON responses; multipart form data for conversion; SSE for progress.
 
+## Development Swagger UI
+
+When `NODE_ENV=development`, Swagger UI is available at:
+
+- UI: `http://localhost:3000/api-docs/`
+- OpenAPI JSON: `http://localhost:3000/api-docs/openapi.json`
+
+Start the development server with `npm run dev`. Swagger routes are not mounted in production environments.
+
 ## Endpoints
 
 ### `GET /health`

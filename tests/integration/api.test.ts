@@ -8,6 +8,7 @@ import test, { after, before } from 'node:test';
 
 const uploadDir = await mkdtemp(path.join(tmpdir(), 'vconvert-api-'));
 process.env.UPLOAD_DIR = uploadDir;
+process.env.NODE_ENV = 'development';
 process.env.MAX_FILE_SIZE_BYTES = '128';
 process.env.FILE_CLEANUP_INTERVAL_MS = '60000';
 
@@ -82,6 +83,21 @@ async function submitUpload(targetFormat?: string, filename = 'sample.mkv', cont
   const query = targetFormat ? `?targetFormat=${encodeURIComponent(targetFormat)}` : '';
   return fetch(`${baseUrl}/api/convert${query}`, { method: 'POST', body: form });
 }
+
+test('Swagger UI and OpenAPI document are available in development', async () => {
+  const ui = await fetch(`${baseUrl}/api-docs/`);
+  assert.equal(ui.status, 200);
+  assert.match(ui.headers.get('content-type') ?? '', /text\/html/);
+
+  const documentResponse = await fetch(`${baseUrl}/api-docs/openapi.json`);
+  assert.equal(documentResponse.status, 200);
+  const document = await documentResponse.json() as { openapi: string; paths: Record<string, unknown> };
+  assert.equal(document.openapi, '3.0.3');
+  assert.ok(document.paths['/api/hardware-status']);
+  assert.ok(document.paths['/api/convert']);
+  assert.ok(document.paths['/api/progress/{jobId}']);
+  assert.ok(document.paths['/api/download/{jobId}']);
+});
 
 test('health and hardware endpoints respond with deployment-ready status', async () => {
   const health = await fetch(`${baseUrl}/health`);

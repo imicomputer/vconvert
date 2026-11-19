@@ -1,8 +1,11 @@
 import express from 'express';
 import multer from 'multer';
+import swaggerUi from 'swagger-ui-express';
 import { logger } from './utils/logger.js';
 import { AppError } from './utils/errors.js';
 import apiRoutes from './routes/api.js';
+import { config } from './config.js';
+import { openApiDocument } from './swagger.js';
 const app = express();
 // Middleware
 app.use(express.json());
@@ -21,6 +24,15 @@ app.use((req, res, next) => {
 });
 // API Routes
 app.use('/api', apiRoutes);
+// Swagger is available only in development environments.
+if (config.nodeEnv === 'development') {
+    app.get('/api-docs/openapi.json', (req, res) => {
+        res.json(openApiDocument);
+    });
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument, {
+        customSiteTitle: 'Video Converter API Documentation'
+    }));
+}
 // Static files
 app.use(express.static('public'));
 // Health check

@@ -492,3 +492,19 @@ The Video Converter Web Application is a full-stack web platform that enables us
 4. WHEN 30 second grace period expires, THE Backend SHALL forcefully terminate remaining FFmpeg processes
 5. WHEN shutdown completes, THE Backend SHALL close all database/file connections and exit cleanly
 
+### Requirement 39: Development REST API Documentation with Swagger
+
+**User Story:** As a developer, I want interactive REST API documentation available in the development environment, so that I can inspect and test API endpoints without maintaining a separate documentation workflow.
+
+#### Acceptance Criteria
+
+1. WHEN `NODE_ENV` is set to `development`, THE Backend SHALL expose Swagger UI at `/api-docs/`
+2. WHEN `NODE_ENV` is set to `development`, THE Backend SHALL expose the OpenAPI 3.0 document at `/api-docs/openapi.json`
+3. THE Swagger UI SHALL describe the implemented endpoints including `GET /health`, `GET /api/hardware-status`, `POST /api/convert`, `GET /api/progress/:jobId`, and `GET /api/download/:jobId`
+4. THE OpenAPI document SHALL describe the multipart `file` field and required `targetFormat` query parameter for `POST /api/convert`
+5. THE OpenAPI document SHALL describe the SSE event shape for `GET /api/progress/:jobId`, including `processing`, `done`, and `error` statuses
+6. THE OpenAPI document SHALL describe success and application error response schemas for the implemented API endpoints
+7. WHEN `NODE_ENV` is set to `production`, THE Backend SHALL NOT mount Swagger UI or the OpenAPI JSON route
+8. Docker Compose development deployments SHALL support enabling Swagger by setting `NODE_ENV=development`
+9. Docker Compose configurations SHALL keep `NODE_ENV=production` as the default and SHALL preserve existing upload directory, port, and hardware-specific settings
+

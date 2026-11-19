@@ -1,6 +1,6 @@
 # Video Converter Web Application - Deployment Guide
 
-**Version**: 1.0.0  
+**Version**: 0.2.0  
 **Last Updated**: 2026-11-19
 
 **Status**: Production Ready
@@ -51,6 +51,13 @@ npm run build
 
 # Start server (development)
 npm start
+
+# Start with file watching
+npm run dev
+
+# Swagger UI (development only)
+# http://localhost:3000/api-docs/
+# OpenAPI JSON: http://localhost:3000/api-docs/openapi.json
 
 # Server runs on http://localhost:3000
 ```
@@ -123,7 +130,7 @@ CMD ["node", "dist/index.js"]
 
 ```bash
 # Build image
-docker build -t video-converter:1.0.0 .
+docker build -t video-converter:0.2.0 .
 
 # Run container
 docker run -d \
@@ -131,7 +138,7 @@ docker run -d \
   -p 3000:3000 \
   -v /tmp/uploads:/app/uploads \
   -e NODE_ENV=production \
-  video-converter:1.0.0
+  video-converter:0.2.0
 
 # View logs
 docker logs -f video-converter
@@ -145,7 +152,7 @@ version: '3.8'
 
 services:
   video-converter:
-    image: video-converter:1.0.0
+    image: video-converter:0.2.0
     container_name: video-converter
     ports:
       - "3000:3000"
@@ -200,7 +207,7 @@ spec:
     spec:
       containers:
       - name: video-converter
-        image: video-converter:1.0.0
+        image: video-converter:0.2.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
@@ -466,7 +473,7 @@ curl http://localhost:3000/health
 
 ```bash
 # 1. Run as non-root user
-docker run --user 1000:1000 video-converter:1.0.0
+docker run --user 1000:1000 video-converter:0.2.0
 
 # 2. Use environment variables for secrets
 # (If authentication added later)
