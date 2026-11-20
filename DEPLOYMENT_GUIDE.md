@@ -283,6 +283,7 @@ kubectl port-forward service/video-converter-service 3000:80
 # .env or environment
 NODE_ENV=production                    # development | production
 PORT=3000                              # Server port
+PUBLISH_PORT=3003                      # Docker External Published port
 UPLOAD_DIR=/tmp/uploads                # File upload directory
 MAX_FILE_SIZE_BYTES=2147483648         # 2GB max file size
 FILE_TTL_SECONDS=600                   # 10 minutes
@@ -292,6 +293,10 @@ FFMPEG_TIMEOUT_MS=300000               # 5 minutes conversion timeout
 HARDWARE_DETECTION_TIMEOUT_MS=5000     # 5 seconds GPU detection timeout
 FILE_CLEANUP_INTERVAL_MS=30000         # 30 seconds cleanup interval
 ```
+
+### Docker Compose and Coolify Ports
+
+In the repository's Compose files, `PORT` is the port inside the container and `PUBLISH_PORT` is the host-published port. For an internal port of `3000` exposed directly on host port `3003`, set `PORT=3000` and `PUBLISH_PORT=3003`; Compose maps `3003:3000`. Open `http://<server-host-or-ip>:3003` for direct access. The browser UI sends API requests to the same origin at `/api`, so no separate browser API URL is required. When using a Coolify-managed domain/proxy, route it to the service's internal `PORT`. `localhost` in a remote user's browser points to that user's own computer, not the Coolify server.
 
 ### Configuration Precedence
 

@@ -75,7 +75,7 @@ The server loads `.env` using `dotenv`. Values are parsed from the environment i
 
 The checked-in `.env.example` also contains `FFMPEG_PATH`, `FFMPEG_TIMEOUT_MS`, and `LOG_LEVEL`. These are parsed or documented in configuration but are **not currently applied** by the process-spawn or logger code; FFmpeg and FFprobe are invoked by their literal executable names on `PATH`, and conversion does not enforce `FFMPEG_TIMEOUT_MS`. Do not rely on these settings until implementation is wired to them.
 
-The browser's `API_BASE_URL` defaults to `http://localhost:3000/api`. Its source supports `process.env.API_BASE_URL` when provided by a bundler/polyfill; a plain static browser does not expose Node's `process` global, so the default is used there.
+The browser's `API_BASE_URL` defaults to the same-origin relative path `/api`. This lets the UI use the host and port from which it was loaded, including deployments behind Coolify or a reverse proxy. The source can read `process.env.API_BASE_URL` when a bundler/polyfill provides it; the current static frontend does not inject server environment variables into browser code.
 
 ## 5. Operational and security boundaries
 
@@ -91,6 +91,6 @@ The browser's `API_BASE_URL` defaults to `http://localhost:3000/api`. Its source
 
 - Automated tests are not implemented. `npm test` only echoes `Tests not yet implemented` and exits successfully.
 - Existing root-level API/deployment/summary/user guides include claims that do not consistently match this code; use the current `docs/` pages and implementation as the source of truth.
-- The default UI API address is localhost. For a remote deployment, configure/bundle the browser API address to the correct server origin; a server-side `.env` setting alone is not automatically substituted into static JavaScript.
+- The UI API address is same-origin (`/api`) by default. A server-side `API_BASE_URL` setting is not automatically substituted into static JavaScript.
 - `FFMPEG_PATH`, `FFMPEG_TIMEOUT_MS`, and `LOG_LEVEL` do not currently control runtime behavior.
 - Uploaded input files can accumulate in the upload directory; monitor and manage disk use until source-file cleanup is implemented.

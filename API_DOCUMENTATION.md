@@ -4,6 +4,8 @@
 **Base URL**: `http://localhost:3000/api`  
 **Authentication**: None (public API)
 
+The URL above is a local-development example. The browser UI calls the API through the same origin using `/api`; for example, a UI opened at `http://localhost:3003` calls `http://localhost:3003/api`. For a remote Coolify deployment, use its domain or server IP rather than `localhost` in the browser.
+
 ---
 
 ## Overview

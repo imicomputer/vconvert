@@ -4,6 +4,8 @@
 **Authentication:** none  
 **Content types:** JSON responses; multipart form data for conversion; SSE for progress.
 
+The browser UI uses the relative API path `/api`, so requests go to the same origin and port that served the page. For example, if the UI is opened at `http://localhost:3003`, its API requests go to `http://localhost:3003/api`. Do not use `localhost` in a browser URL to reach a Coolify server from another computer; use the server's domain or IP. The absolute `localhost:3000` URLs below are local-development examples.
+
 ## Development Swagger UI
 
 When `NODE_ENV=development`, Swagger UI is available at:

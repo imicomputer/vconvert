@@ -42,6 +42,7 @@ Use the theme toggle in the page header to switch the interface theme. The appli
 
 | Symptom | What to try |
 |---|---|
+| Conversion shows "Failed to fetch" | Check that the application server is reachable. The UI calls the API on the same host and port using `/api`; when accessing a remote deployment, use its domain or server IP rather than `localhost`. Operators can check `/health` and `/api/hardware-status` on that same origin. |
 | File is rejected as too large | Select a smaller file or ask the operator whether the configured upload limit can be raised. |
 | File type is rejected | Use a video file with a common video extension/MIME type. The server must also be able to probe/decode it with FFprobe/FFmpeg. |
 | No output format is available | Choose a format different from the input extension. |
