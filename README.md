@@ -50,13 +50,13 @@ The server reads optional settings from a local `.env` file; see [`.env.example`
 
 ### Docker Compose and Coolify
 
-The repository includes a production Docker image and Compose configurations for CPU, NVIDIA, and AMD hosts. See [Docker Compose and Coolify deployment](./docs/DEVELOPMENT_AND_DEPLOYMENT.md#docker-compose-and-coolify) for setup, GPU host requirements, and Coolify Git Repository instructions.
+The repository supports Docker deployments only, using its Dockerfile and Docker Compose configurations. For Coolify, create a **Docker Compose** resource from the GitHub App repository and select `compose.nvidia.yaml` for NVIDIA GPU deployment. See [Docker Compose and Coolify deployment](./docs/DEVELOPMENT_AND_DEPLOYMENT.md#docker-compose-and-coolify) for setup and host GPU requirements.
 
 ```bash
 docker compose up --build
 ```
 
-This starts the CPU-compatible configuration by default at `http://localhost:3000`. To use a GPU, set the Coolify Compose file to `compose.nvidia.yaml` or `compose.amd.yaml`, or use the matching file with `docker compose -f` locally.
+This starts the CPU-compatible configuration by default at `http://localhost:3000`. To use NVIDIA, select `compose.nvidia.yaml` in Coolify's Docker Compose resource or use `docker compose -f compose.nvidia.yaml up --build` locally. The AMD Compose configuration is also available on compatible AMD hosts.
 
 ## Application usage
 

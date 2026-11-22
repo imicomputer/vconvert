@@ -109,6 +109,20 @@ Example event data:
 
 While a job is active, `status` is `processing`. On completion, the terminal event uses `status: "done"` and includes `downloadUrl`, such as `/api/download/{jobId}`. On failure, it uses `status: "error"` and may include `errorMessage`. Job state is in memory; an unknown or restarted-server job returns a `JOB_NOT_FOUND` error.
 
+Failed conversion events include a safe `errorCode` and user-facing `errorMessage`; raw FFmpeg/FFprobe output and server file paths are kept in server logs rather than sent to the browser. The browser also reports the job ID so an operator can find the corresponding runtime log.
+
+```json
+{
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "progress": 0,
+  "status": "failed",
+  "currentFrame": 0,
+  "totalFrames": 3000,
+  "errorCode": "FFMPEG_FAILED",
+  "errorMessage": "Video encoding failed. Try another output format or contact the operator. Error code: FFMPEG_FAILED."
+}
+```
+
 ### `GET /api/download/{jobId}`
 
 Downloads the output for a completed job. The response is an attachment using the uploaded file's original basename and the target extension (for example, `sample.mp4`). This request resets the output's TTL.
