@@ -21,7 +21,7 @@ services:
     volumes:
       - type: volume
         source: uploads
-        target: ${UPLOAD_DIR:-/tmp/uploads}
+        target: ${UPLOAD_DIR}
     expose:
       - "${PORT:-3000}"
     healthcheck:
