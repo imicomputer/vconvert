@@ -9,6 +9,22 @@ function toEventStatus(status: string): 'processing' | 'done' | 'error' {
   return 'processing';
 }
 
+function getPublicErrorMessage(errorCode: string | undefined): string {
+  const messages: Record<string, string> = {
+    PROBE_FAILED: 'The uploaded file could not be read as a video.',
+    PROBE_PARSE_ERROR: 'The uploaded file could not be read as a video.',
+    PROBE_TIMEOUT: 'Video inspection timed out. Try another file or contact the operator.',
+    PROBE_EXEC_ERROR: 'The server could not run FFprobe. Contact the operator.',
+    PROBE_SPAWN_ERROR: 'The server could not run FFprobe. Contact the operator.',
+    FFMPEG_FAILED: 'Video encoding failed. Try another output format or contact the operator.',
+    FFMPEG_ERROR: 'The server could not run FFmpeg. Contact the operator.',
+    FFMPEG_SPAWN_ERROR: 'The server could not run FFmpeg. Contact the operator.'
+  };
+  const message = messages[errorCode || ''] || 'Conversion failed. Contact the operator.';
+  const code = errorCode || 'CONVERSION_FAILED';
+  return `${message} Error code: ${code}.`;
+}
+
 /**
  * ProgressController: Streams conversion progress via Server-Sent Events (SSE)
  */
@@ -54,7 +70,16 @@ export class ProgressController {
           return;
         }
 
-        const event = {
+        const event: {
+          jobId: string;
+          progress: number;
+          status: string;
+          currentFrame: number;
+          totalFrames: number;
+          downloadUrl?: string;
+          errorCode?: string;
+          errorMessage?: string;
+        } = {
           jobId,
           progress: currentJob.progress,
           status: toEventStatus(currentJob.status),
@@ -64,10 +89,11 @@ export class ProgressController {
 
         // Add completion info
         if (currentJob.status === 'completed') {
-          (event as any).downloadUrl = `/api/download/${jobId}`;
+          event.downloadUrl = `/api/download/${jobId}`;
           clearInterval(pollInterval);
         } else if (currentJob.status === 'failed') {
-          (event as any).errorMessage = currentJob.error;
+          event.errorCode = currentJob.errorCode || 'CONVERSION_FAILED';
+          event.errorMessage = getPublicErrorMessage(event.errorCode);
           clearInterval(pollInterval);
         }
 
@@ -80,9 +106,8 @@ export class ProgressController {
       }, 500);
 
       // Cleanup on client disconnect
-      req.on('close', () => {
+      res.on('close', () => {
         clearInterval(pollInterval);
-        res.end();
       });
     } catch (error) {
       logger.error(`[ProgressController] Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

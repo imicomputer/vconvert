@@ -275,7 +275,8 @@ class VideoConverterApp {
             },
             (error) => {
                 // On error
-                const message = error.errorMessage || ERROR_MESSAGES.CONVERSION_FAILED;
+                const detail = error.errorMessage || ERROR_MESSAGES.CONVERSION_FAILED;
+                const message = `${detail} Job ID: ${this.currentJobId}.`;
                 this.progressController.showError(message);
                 this.notificationManager.showError(message);
             }

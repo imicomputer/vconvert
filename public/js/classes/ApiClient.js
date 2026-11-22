@@ -90,7 +90,7 @@ export class ApiClient {
 
         eventSource.onerror = (error) => {
             console.error('Progress stream error:', error);
-            onError({ errorMessage: 'Connection lost' });
+            onError({ errorMessage: 'The progress stream was interrupted. Check the server connection and logs.' });
             eventSource.close();
         };
 
