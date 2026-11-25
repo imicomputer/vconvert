@@ -8,6 +8,21 @@ function toEventStatus(status) {
         return 'error';
     return 'processing';
 }
+function getPublicErrorMessage(errorCode) {
+    const messages = {
+        PROBE_FAILED: 'The uploaded file could not be read as a video.',
+        PROBE_PARSE_ERROR: 'The uploaded file could not be read as a video.',
+        PROBE_TIMEOUT: 'Video inspection timed out. Try another file or contact the operator.',
+        PROBE_EXEC_ERROR: 'The server could not run FFprobe. Contact the operator.',
+        PROBE_SPAWN_ERROR: 'The server could not run FFprobe. Contact the operator.',
+        FFMPEG_FAILED: 'Video encoding failed. Try another output format or contact the operator.',
+        FFMPEG_ERROR: 'The server could not run FFmpeg. Contact the operator.',
+        FFMPEG_SPAWN_ERROR: 'The server could not run FFmpeg. Contact the operator.'
+    };
+    const message = messages[errorCode || ''] || 'Conversion failed. Contact the operator.';
+    const code = errorCode || 'CONVERSION_FAILED';
+    return `${message} Error code: ${code}.`;
+}
 /**
  * ProgressController: Streams conversion progress via Server-Sent Events (SSE)
  */
@@ -60,7 +75,8 @@ export class ProgressController {
                     clearInterval(pollInterval);
                 }
                 else if (currentJob.status === 'failed') {
-                    event.errorMessage = currentJob.error;
+                    event.errorCode = currentJob.errorCode || 'CONVERSION_FAILED';
+                    event.errorMessage = getPublicErrorMessage(event.errorCode);
                     clearInterval(pollInterval);
                 }
                 res.write(`data: ${JSON.stringify(event)}\n\n`);
@@ -70,9 +86,8 @@ export class ProgressController {
                 }
             }, 500);
             // Cleanup on client disconnect
-            req.on('close', () => {
+            res.on('close', () => {
                 clearInterval(pollInterval);
-                res.end();
             });
         }
         catch (error) {

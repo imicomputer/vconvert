@@ -62,6 +62,7 @@ export class VideoConverterService {
             job.status = 'failed';
             job.endTime = new Date();
             job.error = error instanceof Error ? error.message : 'Unknown error';
+            job.errorCode = error instanceof AppError ? error.code : 'CONVERSION_FAILED';
             logger.error(`[Converter] Conversion failed: ${jobId} - ${job.error}`);
             onProgress(job);
             throw error;
